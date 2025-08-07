@@ -4,7 +4,7 @@
 extern crate alloc;
 
 use alloc::vec::Vec;
-use alloy_primitives::{keccak256, B256};
+use alloy_primitives::keccak256;
 
 pub const ARB_SYS: [u8; 20] = hex20(0x64);
 pub const ARB_ADDRESS_TABLE: [u8; 20] = hex20(0x66);
