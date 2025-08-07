@@ -1,5 +1,5 @@
-pub mod tx;
 pub mod receipt;
+pub mod tx;
 
-pub use tx::{ArbTxEnvelope, ArbTxType};
 pub use receipt::ArbReceiptEnvelope;
+pub use tx::{ArbTxEnvelope, ArbTxType};

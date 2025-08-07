@@ -3,10 +3,10 @@
 extern crate alloc;
 
 use alloc::vec::Vec;
-use core::fmt;
-use thiserror::Error;
 use alloy_primitives::{Address, B256, U256};
 use alloy_rlp::{Decodable, Encodable, RlpDecodable, RlpEncodable};
+use core::fmt;
+use thiserror::Error;
 fn decode_option_address(buf: &mut &[u8]) -> Result<Option<Address>, alloy_rlp::Error> {
     if let Some(&first) = buf.first() {
         if first == alloy_rlp::EMPTY_STRING_CODE {
@@ -17,7 +17,6 @@ fn decode_option_address(buf: &mut &[u8]) -> Result<Option<Address>, alloy_rlp::
     let addr: Address = Decodable::decode(buf)?;
     Ok(Some(addr))
 }
-
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
@@ -147,7 +146,6 @@ pub enum ArbTxEnvelope {
     Legacy(Vec<u8>),
 }
 
-
 impl Encodable for ArbUnsignedTx {
     fn length(&self) -> usize {
         let mut payload = 0usize;
@@ -156,7 +154,10 @@ impl Encodable for ArbUnsignedTx {
         payload += self.nonce.length();
         payload += self.gas_fee_cap.length();
         payload += self.gas.length();
-        payload += match self.to { Some(a) => a.length(), None => 1 };
+        payload += match self.to {
+            Some(a) => a.length(),
+            None => 1,
+        };
         payload += self.value.length();
         payload += self.data.length();
         alloy_rlp::length_of_length(payload) + payload + 1
@@ -168,17 +169,26 @@ impl Encodable for ArbUnsignedTx {
         payload += self.nonce.length();
         payload += self.gas_fee_cap.length();
         payload += self.gas.length();
-        payload += match self.to { Some(a) => a.length(), None => 1 };
+        payload += match self.to {
+            Some(a) => a.length(),
+            None => 1,
+        };
         payload += self.value.length();
         payload += self.data.length();
-        let header = alloy_rlp::Header { list: true, payload_length: payload };
+        let header = alloy_rlp::Header {
+            list: true,
+            payload_length: payload,
+        };
         header.encode(out);
         self.chain_id.encode(out);
         self.from.encode(out);
         self.nonce.encode(out);
         self.gas_fee_cap.encode(out);
         self.gas.encode(out);
-        match self.to { Some(a) => a.encode(out), None => out.put_slice(&[alloy_rlp::EMPTY_STRING_CODE]) }
+        match self.to {
+            Some(a) => a.encode(out),
+            None => out.put_slice(&[alloy_rlp::EMPTY_STRING_CODE]),
+        }
         self.value.encode(out);
         self.data.encode(out);
     }
@@ -197,7 +207,16 @@ impl Decodable for ArbUnsignedTx {
         let value: U256 = Decodable::decode(&mut p)?;
         let data: Vec<u8> = Decodable::decode(&mut p)?;
         *buf = rest;
-        Ok(ArbUnsignedTx { chain_id, from, nonce, gas_fee_cap, gas, to, value, data })
+        Ok(ArbUnsignedTx {
+            chain_id,
+            from,
+            nonce,
+            gas_fee_cap,
+            gas,
+            to,
+            value,
+            data,
+        })
     }
 }
 
@@ -209,7 +228,10 @@ impl Encodable for ArbContractTx {
         payload += self.from.length();
         payload += self.gas_fee_cap.length();
         payload += self.gas.length();
-        payload += match self.to { Some(a) => a.length(), None => 1 };
+        payload += match self.to {
+            Some(a) => a.length(),
+            None => 1,
+        };
         payload += self.value.length();
         payload += self.data.length();
         alloy_rlp::length_of_length(payload) + payload + 1
@@ -221,17 +243,26 @@ impl Encodable for ArbContractTx {
         payload += self.from.length();
         payload += self.gas_fee_cap.length();
         payload += self.gas.length();
-        payload += match self.to { Some(a) => a.length(), None => 1 };
+        payload += match self.to {
+            Some(a) => a.length(),
+            None => 1,
+        };
         payload += self.value.length();
         payload += self.data.length();
-        let header = alloy_rlp::Header { list: true, payload_length: payload };
+        let header = alloy_rlp::Header {
+            list: true,
+            payload_length: payload,
+        };
         header.encode(out);
         self.chain_id.encode(out);
         self.request_id.encode(out);
         self.from.encode(out);
         self.gas_fee_cap.encode(out);
         self.gas.encode(out);
-        match self.to { Some(a) => a.encode(out), None => out.put_slice(&[alloy_rlp::EMPTY_STRING_CODE]) }
+        match self.to {
+            Some(a) => a.encode(out),
+            None => out.put_slice(&[alloy_rlp::EMPTY_STRING_CODE]),
+        }
         self.value.encode(out);
         self.data.encode(out);
     }
@@ -250,7 +281,16 @@ impl Decodable for ArbContractTx {
         let value: U256 = Decodable::decode(&mut p)?;
         let data: Vec<u8> = Decodable::decode(&mut p)?;
         *buf = rest;
-        Ok(ArbContractTx { chain_id, request_id, from, gas_fee_cap, gas, to, value, data })
+        Ok(ArbContractTx {
+            chain_id,
+            request_id,
+            from,
+            gas_fee_cap,
+            gas,
+            to,
+            value,
+            data,
+        })
     }
 }
 
@@ -262,7 +302,10 @@ impl Encodable for ArbRetryTx {
         payload += self.from.length();
         payload += self.gas_fee_cap.length();
         payload += self.gas.length();
-        payload += match self.to { Some(a) => a.length(), None => 1 };
+        payload += match self.to {
+            Some(a) => a.length(),
+            None => 1,
+        };
         payload += self.value.length();
         payload += self.data.length();
         payload += self.ticket_id.length();
@@ -278,21 +321,30 @@ impl Encodable for ArbRetryTx {
         payload += self.from.length();
         payload += self.gas_fee_cap.length();
         payload += self.gas.length();
-        payload += match self.to { Some(a) => a.length(), None => 1 };
+        payload += match self.to {
+            Some(a) => a.length(),
+            None => 1,
+        };
         payload += self.value.length();
         payload += self.data.length();
         payload += self.ticket_id.length();
         payload += self.refund_to.length();
         payload += self.max_refund.length();
         payload += self.submission_fee_refund.length();
-        let header = alloy_rlp::Header { list: true, payload_length: payload };
+        let header = alloy_rlp::Header {
+            list: true,
+            payload_length: payload,
+        };
         header.encode(out);
         self.chain_id.encode(out);
         self.nonce.encode(out);
         self.from.encode(out);
         self.gas_fee_cap.encode(out);
         self.gas.encode(out);
-        match self.to { Some(a) => a.encode(out), None => out.put_slice(&[alloy_rlp::EMPTY_STRING_CODE]) }
+        match self.to {
+            Some(a) => a.encode(out),
+            None => out.put_slice(&[alloy_rlp::EMPTY_STRING_CODE]),
+        }
         self.value.encode(out);
         self.data.encode(out);
         self.ticket_id.encode(out);
@@ -319,7 +371,20 @@ impl Decodable for ArbRetryTx {
         let max_refund: U256 = Decodable::decode(&mut p)?;
         let submission_fee_refund: U256 = Decodable::decode(&mut p)?;
         *buf = rest;
-        Ok(ArbRetryTx { chain_id, nonce, from, gas_fee_cap, gas, to, value, data, ticket_id, refund_to, max_refund, submission_fee_refund })
+        Ok(ArbRetryTx {
+            chain_id,
+            nonce,
+            from,
+            gas_fee_cap,
+            gas,
+            to,
+            value,
+            data,
+            ticket_id,
+            refund_to,
+            max_refund,
+            submission_fee_refund,
+        })
     }
 }
 
@@ -333,7 +398,10 @@ impl Encodable for ArbSubmitRetryableTx {
         payload += self.deposit_value.length();
         payload += self.gas_fee_cap.length();
         payload += self.gas.length();
-        payload += match self.retry_to { Some(a) => a.length(), None => 1 };
+        payload += match self.retry_to {
+            Some(a) => a.length(),
+            None => 1,
+        };
         payload += self.retry_value.length();
         payload += self.beneficiary.length();
         payload += self.max_submission_fee.length();
@@ -350,13 +418,19 @@ impl Encodable for ArbSubmitRetryableTx {
         payload += self.deposit_value.length();
         payload += self.gas_fee_cap.length();
         payload += self.gas.length();
-        payload += match self.retry_to { Some(a) => a.length(), None => 1 };
+        payload += match self.retry_to {
+            Some(a) => a.length(),
+            None => 1,
+        };
         payload += self.retry_value.length();
         payload += self.beneficiary.length();
         payload += self.max_submission_fee.length();
         payload += self.fee_refund_addr.length();
         payload += self.retry_data.length();
-        let header = alloy_rlp::Header { list: true, payload_length: payload };
+        let header = alloy_rlp::Header {
+            list: true,
+            payload_length: payload,
+        };
         header.encode(out);
         self.chain_id.encode(out);
         self.request_id.encode(out);
@@ -365,7 +439,10 @@ impl Encodable for ArbSubmitRetryableTx {
         self.deposit_value.encode(out);
         self.gas_fee_cap.encode(out);
         self.gas.encode(out);
-        match self.retry_to { Some(a) => a.encode(out), None => out.put_slice(&[alloy_rlp::EMPTY_STRING_CODE]) }
+        match self.retry_to {
+            Some(a) => a.encode(out),
+            None => out.put_slice(&[alloy_rlp::EMPTY_STRING_CODE]),
+        }
         self.retry_value.encode(out);
         self.beneficiary.encode(out);
         self.max_submission_fee.encode(out);
@@ -392,12 +469,23 @@ impl Decodable for ArbSubmitRetryableTx {
         let fee_refund_addr: Address = Decodable::decode(&mut p)?;
         let retry_data: Vec<u8> = Decodable::decode(&mut p)?;
         *buf = rest;
-        Ok(ArbSubmitRetryableTx { chain_id, request_id, from, l1_base_fee, deposit_value, gas_fee_cap, gas, retry_to, retry_value, beneficiary, max_submission_fee, fee_refund_addr, retry_data })
+        Ok(ArbSubmitRetryableTx {
+            chain_id,
+            request_id,
+            from,
+            l1_base_fee,
+            deposit_value,
+            gas_fee_cap,
+            gas,
+            retry_to,
+            retry_value,
+            beneficiary,
+            max_submission_fee,
+            fee_refund_addr,
+            retry_data,
+        })
     }
 }
-
-
-
 
 impl ArbTxEnvelope {
     pub fn tx_type(&self) -> ArbTxType {
@@ -516,7 +604,9 @@ mod tests {
     fn typed_envelope_roundtrip_per_variant() {
         let dep = ArbTxEnvelope::Deposit(ArbDepositTx {
             chain_id: U256::from(42161u64),
-            l1_request_id: b256!("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+            l1_request_id: b256!(
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ),
             from: address!("0000000000000000000000000000000000000001"),
             to: address!("0000000000000000000000000000000000000002"),
             value: U256::from(1u64),
@@ -586,7 +676,9 @@ mod tests {
     fn roundtrip_deposit_only() {
         let env = ArbTxEnvelope::Deposit(ArbDepositTx {
             chain_id: U256::from(42161u64),
-            l1_request_id: b256!("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+            l1_request_id: b256!(
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ),
             from: address!("0000000000000000000000000000000000000001"),
             to: address!("0000000000000000000000000000000000000002"),
             value: U256::from(1u64),
@@ -699,7 +791,13 @@ mod tests {
         let payload = &enc[1..];
         let (dec, used) = ArbUnsignedTx::decode_with_used(payload).expect("unsigned decode");
         assert_eq!(used, payload.len());
-        assert_eq!(dec, match env { ArbTxEnvelope::Unsigned(u) => u, _ => unreachable!() });
+        assert_eq!(
+            dec,
+            match env {
+                ArbTxEnvelope::Unsigned(u) => u,
+                _ => unreachable!(),
+            }
+        );
     }
 
     #[test]
@@ -722,8 +820,12 @@ mod tests {
         let payload = &enc[1..];
         let (dec, used) = ArbRetryTx::decode_with_used(payload).expect("retry decode");
         assert_eq!(used, payload.len());
-        assert_eq!(dec, match env { ArbTxEnvelope::Retry(r) => r, _ => unreachable!() });
+        assert_eq!(
+            dec,
+            match env {
+                ArbTxEnvelope::Retry(r) => r,
+                _ => unreachable!(),
+            }
+        );
     }
-
-
 }

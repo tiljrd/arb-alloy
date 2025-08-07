@@ -66,11 +66,11 @@ mod tests {
 
     #[test]
     fn predeploy_addresses_match_expected_suffixes() {
-        assert_eq!(&ARB_SYS[12..], &[0,0,0,0,0,0,0,0x64]);
-        assert_eq!(&ARB_RETRYABLE_TX[12..], &[0,0,0,0,0,0,0,0x6e]);
-        assert_eq!(&ARB_OWNER[12..], &[0,0,0,0,0,0,0,0x70]);
-        assert_eq!(&NODE_INTERFACE[12..], &[0,0,0,0,0,0,0,0xc8]);
-        assert_eq!(&ARB_DEBUG[12..], &[0,0,0,0,0,0,0,0xff]);
+        assert_eq!(&ARB_SYS[12..], &[0, 0, 0, 0, 0, 0, 0, 0x64]);
+        assert_eq!(&ARB_RETRYABLE_TX[12..], &[0, 0, 0, 0, 0, 0, 0, 0x6e]);
+        assert_eq!(&ARB_OWNER[12..], &[0, 0, 0, 0, 0, 0, 0, 0x70]);
+        assert_eq!(&NODE_INTERFACE[12..], &[0, 0, 0, 0, 0, 0, 0, 0xc8]);
+        assert_eq!(&ARB_DEBUG[12..], &[0, 0, 0, 0, 0, 0, 0, 0xff]);
     }
 
     #[test]
