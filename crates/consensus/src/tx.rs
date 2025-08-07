@@ -433,7 +433,7 @@ impl ArbTxEnvelope {
         }
         let ty = ArbTxType::from_u8(bytes[0])?;
         let payload = &bytes[1..];
-        let env = match ty {
+        match ty {
             ArbTxType::ArbitrumDepositTx => {
                 let (val, used) = ArbDepositTx::decode_with_used(payload)?;
                 return Ok((ArbTxEnvelope::Deposit(val), used + 1));
