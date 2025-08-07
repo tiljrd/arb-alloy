@@ -1,6 +1,8 @@
 #![allow(dead_code)]
 
 use alloy_primitives::{keccak256, B256};
+use alloc::vec::Vec;
+
 
 pub fn retryable_submission_fee(calldata_len: usize, l1_base_fee_wei: u128) -> u128 {
     let overhead: u128 = 1400;
