@@ -1,5 +1,3 @@
-#![no_std]
-
 pub mod tx;
 pub mod receipt;
 
