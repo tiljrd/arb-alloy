@@ -71,6 +71,33 @@ impl ArbTxEnvelope {
             ArbTxEnvelope::Legacy => ArbTxType::ArbitrumLegacyTx,
         }
     }
+
+    pub fn encode_typed_minimal(&self) -> Vec<u8> {
+        let mut out = Vec::with_capacity(2);
+        out.push(self.tx_type().as_u8());
+        out.push(0xC0);
+        out
+    }
+
+    pub fn decode_typed_minimal(bytes: &[u8]) -> Result<(Self, usize), TxTypeError> {
+        if bytes.len() < 2 {
+            return Err(TxTypeError::UnknownType(0xff));
+        }
+        let ty = ArbTxType::from_u8(bytes[0])?;
+        if bytes[1] != 0xC0 {
+            return Err(TxTypeError::UnknownType(bytes[0]));
+        }
+        let env = match ty {
+            ArbTxType::ArbitrumDepositTx => ArbTxEnvelope::Deposit,
+            ArbTxType::ArbitrumUnsignedTx => ArbTxEnvelope::Unsigned,
+            ArbTxType::ArbitrumContractTx => ArbTxEnvelope::Contract,
+            ArbTxType::ArbitrumRetryTx => ArbTxEnvelope::Retry,
+            ArbTxType::ArbitrumSubmitRetryableTx => ArbTxEnvelope::SubmitRetryable,
+            ArbTxType::ArbitrumInternalTx => ArbTxEnvelope::Internal,
+            ArbTxType::ArbitrumLegacyTx => ArbTxEnvelope::Legacy,
+        };
+        Ok((env, 2))
+    }
 }
 
 #[derive(Debug, Error, PartialEq, Eq)]
@@ -104,5 +131,25 @@ mod tests {
     #[test]
     fn unknown_type_errs() {
         assert!(matches!(ArbTxType::from_u8(0x01), Err(TxTypeError::UnknownType(0x01))));
+    }
+
+    #[test]
+    fn typed_minimal_roundtrip() {
+        let envs = [
+            ArbTxEnvelope::Deposit,
+            ArbTxEnvelope::Unsigned,
+            ArbTxEnvelope::Contract,
+            ArbTxEnvelope::Retry,
+            ArbTxEnvelope::SubmitRetryable,
+            ArbTxEnvelope::Internal,
+            ArbTxEnvelope::Legacy,
+        ];
+        for e in envs {
+            let enc = e.encode_typed_minimal();
+            assert_eq!(enc.len(), 2);
+            let (dec, used) = ArbTxEnvelope::decode_typed_minimal(&enc).unwrap();
+            assert_eq!(used, 2);
+            assert_eq!(dec, e);
+        }
     }
 }
