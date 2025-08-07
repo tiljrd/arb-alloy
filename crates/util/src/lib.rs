@@ -1,9 +1,9 @@
 #![no_std]
 #![allow(dead_code)]
-extern crate alloc;
 
+extern crate alloc;
 
 pub mod retryables;
 pub mod l1_pricing;
 
-pub use retryables::{retryable_submission_fee, escrow_address_from_ticket};
+pub use retryables::{escrow_address_from_ticket, retryable_submission_fee};
