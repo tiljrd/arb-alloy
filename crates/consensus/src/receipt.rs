@@ -17,11 +17,3 @@ mod tests {
         assert_eq!(r.cumulative_gas_used, 12345);
     }
 }
-
-#![allow(dead_code)]
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct ArbReceiptEnvelope {
-    pub status: bool,
-    pub cumulative_gas_used: u128,
-}
