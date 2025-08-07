@@ -8,6 +8,8 @@ impl L1PricingState {
     pub fn poster_data_cost(&self, data_gas: u128) -> u128 {
         self.l1_base_fee_wei.saturating_mul(data_gas)
     }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -20,6 +22,4 @@ mod tests {
         assert_eq!(state.poster_data_cost(10), 10_000);
         assert_eq!(state.poster_data_cost(123456789), 123_456_789_000);
     }
-}
-
 }
