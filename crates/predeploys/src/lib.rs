@@ -4,6 +4,7 @@
 extern crate alloc;
 
 use alloc::vec::Vec;
+use alloy_primitives::{keccak256, B256};
 
 pub const ARB_SYS: [u8; 20] = hex20(0x64);
 pub const ARB_ADDRESS_TABLE: [u8; 20] = hex20(0x66);
@@ -37,6 +38,22 @@ pub fn signature_bytes(sig: &str) -> Vec<u8> {
     sig.as_bytes().to_vec()
 }
 
+pub const fn selector_for(sig_hash: [u8; 32]) -> [u8; 4] {
+    [sig_hash[0], sig_hash[1], sig_hash[2], sig_hash[3]]
+}
+
+pub const fn topic_for(sig_hash: [u8; 32]) -> [u8; 32] {
+    sig_hash
+}
+
+pub fn selector(sig: &str) -> [u8; 4] {
+    selector_for(keccak256(sig.as_bytes()).0)
+}
+
+pub fn topic(sig: &str) -> [u8; 32] {
+    topic_for(keccak256(sig.as_bytes()).0)
+}
+
 const fn hex20(last: u8) -> [u8; 20] {
     let mut out = [0u8; 20];
     out[19] = last;
@@ -57,9 +74,14 @@ mod tests {
     }
 
     #[test]
-    fn signature_strings_present() {
-        assert!(SIG_SEND_TX_TO_L1.len() > 0);
-        assert!(SIG_CREATE_RETRYABLE_TICKET.len() > 0);
-        assert!(EVT_TICKET_CREATED.len() > 0);
+    fn selectors_and_topics_are_derived() {
+        let s = selector(SIG_SEND_TX_TO_L1);
+        assert_eq!(s.len(), 4);
+        let t = topic(EVT_TICKET_CREATED);
+        assert_eq!(t.len(), 32);
+        let sel_again = selector(SIG_SEND_TX_TO_L1);
+        assert_eq!(s, sel_again);
+        let topic_again = topic(EVT_TICKET_CREATED);
+        assert_eq!(t, topic_again);
     }
 }
