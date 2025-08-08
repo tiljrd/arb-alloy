@@ -28,11 +28,20 @@ pub const SIG_CREATE_RETRYABLE_TICKET: &str =
     "createRetryableTicket(address,uint256,uint256,address,address,uint256,uint256,bytes)";
 pub const SIG_RETRY_REDEEM: &str = "redeem(bytes32)";
 pub const SIG_CANCEL_RETRYABLE_TICKET: &str = "cancelRetryableTicket(bytes32)";
+pub const SIG_ARB_BLOCK_NUMBER: &str = "arbBlockNumber()";
+pub const SIG_ARB_BLOCK_HASH: &str = "arbBlockHash(uint64)";
+pub const SIG_GET_TX_CALL_VALUE: &str = "getTxCallValue()";
+pub const SIG_GET_TX_ORIGIN: &str = "getTxOrigin()";
+pub const SIG_GET_BLOCK_NUMBER: &str = "getBlockNumber()";
+pub const SIG_GET_BLOCK_HASH: &str = "getBlockHash(uint64)";
+pub const SIG_GET_STORAGE_AT: &str = "getStorageAt(address,bytes32)";
 
 pub const EVT_TICKET_CREATED: &str =
     "TicketCreated(bytes32,address,uint256,uint256,address,address,uint256,uint256)";
 pub const EVT_TICKET_REDEEMED: &str = "Redeemed(bytes32,address)";
 pub const EVT_TICKET_CANCELED: &str = "Canceled(bytes32,address)";
+pub const EVT_L2_TO_L1_TX: &str =
+    "L2ToL1Transaction(address,address,uint256,uint256,uint256,uint256,bytes)";
 
 pub fn signature_bytes(sig: &str) -> Vec<u8> {
     sig.as_bytes().to_vec()
@@ -83,5 +92,22 @@ mod tests {
         assert_eq!(s, sel_again);
         let topic_again = topic(EVT_TICKET_CREATED);
         assert_eq!(t, topic_again);
+    #[test]
+    fn more_selectors_and_topics_are_derived_consistently() {
+        let s1 = selector(SIG_ARB_BLOCK_NUMBER);
+        let s1b = selector(SIG_ARB_BLOCK_NUMBER);
+        assert_eq!(s1, s1b);
+        let s2 = selector(SIG_ARB_BLOCK_HASH);
+        let s2b = selector(SIG_ARB_BLOCK_HASH);
+        assert_eq!(s2, s2b);
+
+        let s3 = selector(SIG_GET_TX_CALL_VALUE);
+        let s3b = selector(SIG_GET_TX_CALL_VALUE);
+        assert_eq!(s3, s3b);
+
+        let t1 = topic(EVT_L2_TO_L1_TX);
+        let t1b = topic(EVT_L2_TO_L1_TX);
+        assert_eq!(t1, t1b);
+    }
     }
 }
