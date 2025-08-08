@@ -25,6 +25,10 @@ pub fn escrow_address_from_ticket(ticket_id: [u8; 32]) -> [u8; 20] {
     out
 }
 
+pub fn retryable_timeout_from(now_secs: u64) -> u64 {
+    now_secs.saturating_add(RETRYABLE_LIFETIME_SECONDS)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -79,5 +83,14 @@ mod tests {
         let fee1 = retryable_submission_fee(len, f1);
         let fee2 = retryable_submission_fee(len, f2);
         assert_eq!(fee2, fee1 * (f2 / f1));
+    }
+
+    #[test]
+    fn retryable_timeout_adds_lifetime_and_saturates() {
+        let now = 1_000u64;
+        assert_eq!(retryable_timeout_from(now), now + RETRYABLE_LIFETIME_SECONDS);
+        let near_max = u64::MAX - 10;
+        let res = retryable_timeout_from(near_max);
+        assert_eq!(res, u64::MAX);
     }
 }
