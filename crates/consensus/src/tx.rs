@@ -598,6 +598,25 @@ mod tests {
             let back = ArbTxType::from_u8(b).unwrap();
             assert_eq!(t, back);
         }
+    #[test]
+    fn exact_type_bytes_match_nitro_spec() {
+        assert_eq!(ArbTxType::ArbitrumDepositTx.as_u8(), 0x64);
+        assert_eq!(ArbTxType::ArbitrumUnsignedTx.as_u8(), 0x65);
+        assert_eq!(ArbTxType::ArbitrumContractTx.as_u8(), 0x66);
+        assert_eq!(ArbTxType::ArbitrumRetryTx.as_u8(), 0x68);
+        assert_eq!(ArbTxType::ArbitrumSubmitRetryableTx.as_u8(), 0x69);
+        assert_eq!(ArbTxType::ArbitrumInternalTx.as_u8(), 0x6a);
+        assert_eq!(ArbTxType::ArbitrumLegacyTx.as_u8(), 0x78);
+
+        assert_eq!(ArbTxType::from_u8(0x64).unwrap(), ArbTxType::ArbitrumDepositTx);
+        assert_eq!(ArbTxType::from_u8(0x65).unwrap(), ArbTxType::ArbitrumUnsignedTx);
+        assert_eq!(ArbTxType::from_u8(0x66).unwrap(), ArbTxType::ArbitrumContractTx);
+        assert_eq!(ArbTxType::from_u8(0x68).unwrap(), ArbTxType::ArbitrumRetryTx);
+        assert_eq!(ArbTxType::from_u8(0x69).unwrap(), ArbTxType::ArbitrumSubmitRetryableTx);
+        assert_eq!(ArbTxType::from_u8(0x6a).unwrap(), ArbTxType::ArbitrumInternalTx);
+        assert_eq!(ArbTxType::from_u8(0x78).unwrap(), ArbTxType::ArbitrumLegacyTx);
+    }
+
     }
 
     #[test]
