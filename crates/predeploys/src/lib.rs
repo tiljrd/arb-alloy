@@ -36,6 +36,10 @@ pub const SIG_GET_TX_ORIGIN: &str = "getTxOrigin()";
 pub const SIG_GET_BLOCK_NUMBER: &str = "getBlockNumber()";
 pub const SIG_GET_BLOCK_HASH: &str = "getBlockHash(uint64)";
 pub const SIG_GET_STORAGE_AT: &str = "getStorageAt(address,bytes32)";
+pub const SIG_ARB_CHAIN_ID: &str = "arbChainID()";
+pub const SIG_ARB_OS_VERSION: &str = "arbOSVersion()";
+pub const SIG_ARB_CHAIN_ID: &str = "arbChainID()";
+pub const SIG_ARB_OS_VERSION: &str = "arbOSVersion()";
 
 /* ArbAddressTable */
 pub const SIG_AT_ADDRESS_EXISTS: &str = "addressExists(address)";
