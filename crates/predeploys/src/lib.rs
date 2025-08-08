@@ -179,6 +179,8 @@ mod tests {
             let sel = selector(sig);
             assert_eq!(sel.len(), 4);
         }
+    }
+
     #[test]
     fn owner_selectors_compile() {
         for sig in [
@@ -194,7 +196,5 @@ mod tests {
             let sel = selector(sig);
             assert_eq!(sel.len(), 4);
         }
-    }
-
     }
 }
