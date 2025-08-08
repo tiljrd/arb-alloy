@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 #![allow(dead_code)]
 
 extern crate alloc;
@@ -329,6 +331,22 @@ mod golden {
         assert!(s.is_empty());
         let mut out = alloc::vec::Vec::new();
         dec.encode(&mut out);
+        assert_eq!(out, golden);
+    }
+}
+#[cfg(test)]
+mod golden {
+    use super::*;
+    #[test]
+    #[ignore]
+    fn golden_receipt_envelope_matches_nitro_rlp() {
+        let golden: alloc::vec::Vec<u8> = alloc::vec::Vec::new();
+        let mut s = golden.as_slice();
+        let (env, used) = ArbReceiptEnvelope::decode_typed(&mut s).expect("decode");
+        assert!(s.is_empty());
+        assert_eq!(used, golden.len());
+        let mut out = alloc::vec::Vec::new();
+        env.encode_typed(&mut out);
         assert_eq!(out, golden);
     }
 }
