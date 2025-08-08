@@ -85,4 +85,57 @@ mod tests {
         let state = L1PricingState { l1_base_fee_wei: 1_000 };
         assert_eq!(state.poster_data_cost(123456789), 123_456_789_000);
     }
+
+    #[test]
+    fn poster_data_cost_is_zero_when_base_fee_zero() {
+        let state = L1PricingState { l1_base_fee_wei: 0 };
+        assert_eq!(state.poster_data_cost_from_units(123456), 0);
+        assert_eq!(state.poster_data_cost(987654321), 0);
+    }
+
+    #[test]
+    fn apply_estimation_padding_is_monotonic() {
+        let a = 10_000u128;
+        let b = 50_000u128;
+        assert!(L1PricingState::apply_estimation_padding(a) < L1PricingState::apply_estimation_padding(b));
+    }
+    #[test]
+    fn poster_units_monotonic_in_len() {
+        let mut prev = 0u128;
+        for len in 0u64..=1024 {
+            let units = L1PricingState::poster_units_from_brotli_len(len);
+            assert!(units >= prev);
+            prev = units;
+        }
+    }
+
+    #[test]
+    fn apply_padding_increases_units() {
+        let samples: [u128; 6] = [0, 1, 15, 16, 256, 4096];
+        for units in samples {
+            let padded = L1PricingState::apply_estimation_padding(units);
+            assert!(padded >= units);
+            let min_expected = units + ESTIMATION_PADDING_UNITS as u128;
+            assert!(padded >= min_expected);
+            let max_expected = (min_expected * (ONE_IN_BIPS as u128 + ESTIMATION_PADDING_BASIS_POINTS as u128)) / ONE_IN_BIPS as u128;
+            assert!(padded <= max_expected + 1);
+        }
+    }
+
+    #[test]
+    fn data_cost_linear_in_basefee() {
+        let state_zero = L1PricingState { l1_base_fee_wei: 0 };
+        assert_eq!(state_zero.poster_data_cost_from_units(0), 0);
+        assert_eq!(state_zero.poster_data_cost_from_units(12345), 0);
+
+        let units_list: [u128; 4] = [0, 1, 10, 1000];
+        let fees: [u128; 4] = [0, 1, 10, 123_456_789];
+        for units in units_list {
+            for fee in fees {
+                let st = L1PricingState { l1_base_fee_wei: fee };
+                assert_eq!(st.poster_data_cost_from_units(units), units.saturating_mul(fee));
+            }
+        }
+    }
+
 }

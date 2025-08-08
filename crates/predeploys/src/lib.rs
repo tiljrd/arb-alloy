@@ -36,6 +36,29 @@ pub const SIG_GET_TX_ORIGIN: &str = "getTxOrigin()";
 pub const SIG_GET_BLOCK_NUMBER: &str = "getBlockNumber()";
 pub const SIG_GET_BLOCK_HASH: &str = "getBlockHash(uint64)";
 pub const SIG_GET_STORAGE_AT: &str = "getStorageAt(address,bytes32)";
+pub const SIG_ARB_CHAIN_ID: &str = "arbChainID()";
+pub const SIG_ARB_OS_VERSION: &str = "arbOSVersion()";
+/* ArbOwner */
+pub const SIG_OWNER_ADD_CHAIN_OWNER: &str = "addChainOwner(address)";
+pub const SIG_OWNER_REMOVE_CHAIN_OWNER: &str = "removeChainOwner(address)";
+pub const SIG_OWNER_IS_CHAIN_OWNER: &str = "isChainOwner(address)";
+pub const SIG_OWNER_GET_ALL_CHAIN_OWNERS: &str = "getAllChainOwners()";
+pub const SIG_OWNER_GET_NETWORK_FEE_ACCOUNT: &str = "getNetworkFeeAccount()";
+pub const SIG_OWNER_GET_INFRA_FEE_ACCOUNT: &str = "getInfraFeeAccount()";
+pub const SIG_OWNER_SET_NETWORK_FEE_ACCOUNT: &str = "setNetworkFeeAccount(address)";
+pub const SIG_OWNER_SET_INFRA_FEE_ACCOUNT: &str = "setInfraFeeAccount(address)";
+/* ArbRetryableTx */
+pub const SIG_RETRY_GET_LIFETIME: &str = "getLifetime()";
+pub const SIG_RETRY_GET_TIMEOUT: &str = "getTimeout(bytes32)";
+pub const SIG_RETRY_KEEPALIVE: &str = "keepalive(bytes32)";
+pub const SIG_RETRY_GET_BENEFICIARY: &str = "getBeneficiary(bytes32)";
+pub const SIG_RETRY_REDEEM: &str = "redeem(bytes32)";
+pub const SIG_RETRY_CANCEL: &str = "cancel(bytes32)";
+pub const SIG_RETRY_GET_CURRENT_REDEEMER: &str = "getCurrentRedeemer()";
+/* Non-callable but present for explorers */
+pub const SIG_RETRY_SUBMIT_RETRYABLE: &str = "submitRetryable(bytes32,uint256,uint256,uint256,uint256,uint64,uint256,address,address,address,bytes)";
+
+
 
 /* ArbAddressTable */
 pub const SIG_AT_ADDRESS_EXISTS: &str = "addressExists(address)";
@@ -163,6 +186,23 @@ mod tests {
             SIG_NI_GAS_ESTIMATE_L1_COMPONENT,
             SIG_GI_GET_L1_BASEFEE_ESTIMATE,
             SIG_AT_REGISTER,
+        ] {
+            let sel = selector(sig);
+            assert_eq!(sel.len(), 4);
+        }
+    }
+
+    #[test]
+    fn owner_selectors_compile() {
+        for sig in [
+            SIG_OWNER_ADD_CHAIN_OWNER,
+            SIG_OWNER_REMOVE_CHAIN_OWNER,
+            SIG_OWNER_IS_CHAIN_OWNER,
+            SIG_OWNER_GET_ALL_CHAIN_OWNERS,
+            SIG_OWNER_GET_NETWORK_FEE_ACCOUNT,
+            SIG_OWNER_GET_INFRA_FEE_ACCOUNT,
+            SIG_OWNER_SET_NETWORK_FEE_ACCOUNT,
+            SIG_OWNER_SET_INFRA_FEE_ACCOUNT,
         ] {
             let sel = selector(sig);
             assert_eq!(sel.len(), 4);
