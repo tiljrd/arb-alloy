@@ -1,5 +1,6 @@
+pub const RETRYABLE_LIFETIME_SECONDS: u64 = 7 * 24 * 60 * 60;
+pub const RETRYABLE_REAP_PRICE_UNITS: u64 = 58_000;
 
-#![allow(dead_code)]
 
 extern crate alloc;
 
@@ -22,6 +23,12 @@ pub fn escrow_address_from_ticket(ticket_id: [u8; 32]) -> [u8; 20] {
     out.copy_from_slice(&hash.as_slice()[12..32]);
     out
 }
+
+    #[test]
+    fn retryable_constants_match_nitro() {
+        assert_eq!(RETRYABLE_LIFETIME_SECONDS, 7 * 24 * 60 * 60);
+        assert_eq!(RETRYABLE_REAP_PRICE_UNITS, 58_000);
+    }
 
 #[cfg(test)]
 mod tests {
