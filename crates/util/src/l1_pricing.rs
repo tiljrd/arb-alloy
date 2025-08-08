@@ -84,5 +84,19 @@ mod tests {
     fn poster_data_cost_multiplies_base_fee_by_data_gas() {
         let state = L1PricingState { l1_base_fee_wei: 1_000 };
         assert_eq!(state.poster_data_cost(123456789), 123_456_789_000);
+    #[test]
+    fn poster_data_cost_is_zero_when_base_fee_zero() {
+        let state = L1PricingState { l1_base_fee_wei: 0 };
+        assert_eq!(state.poster_data_cost_from_units(123456), 0);
+        assert_eq!(state.poster_data_cost(987654321), 0);
+    }
+
+    #[test]
+    fn apply_estimation_padding_is_monotonic() {
+        let a = 10_000u128;
+        let b = 50_000u128;
+        assert!(L1PricingState::apply_estimation_padding(a) < L1PricingState::apply_estimation_padding(b));
+    }
+
     }
 }
