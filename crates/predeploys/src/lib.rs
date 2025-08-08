@@ -22,6 +22,7 @@ pub const NODE_INTERFACE: [u8; 20] = hex20(0xc8);
 pub const NODE_INTERFACE_DEBUG: [u8; 20] = hex20(0xc9);
 pub const ARB_DEBUG: [u8; 20] = hex20(0xff);
 
+/* ArbSys core */
 pub const SIG_SEND_TX_TO_L1: &str = "sendTxToL1(address,bytes)";
 pub const SIG_WITHDRAW_ETH: &str = "withdrawEth(address)";
 pub const SIG_CREATE_RETRYABLE_TICKET: &str =
@@ -35,6 +36,48 @@ pub const SIG_GET_TX_ORIGIN: &str = "getTxOrigin()";
 pub const SIG_GET_BLOCK_NUMBER: &str = "getBlockNumber()";
 pub const SIG_GET_BLOCK_HASH: &str = "getBlockHash(uint64)";
 pub const SIG_GET_STORAGE_AT: &str = "getStorageAt(address,bytes32)";
+
+/* ArbAddressTable */
+pub const SIG_AT_ADDRESS_EXISTS: &str = "addressExists(address)";
+pub const SIG_AT_COMPRESS: &str = "compress(address)";
+pub const SIG_AT_DECOMPRESS: &str = "decompress(bytes,uint256)";
+pub const SIG_AT_LOOKUP: &str = "lookup(address)";
+pub const SIG_AT_LOOKUP_INDEX: &str = "lookupIndex(uint256)";
+pub const SIG_AT_REGISTER: &str = "register(address)";
+pub const SIG_AT_SIZE: &str = "size()";
+
+/* ArbGasInfo */
+pub const SIG_GI_GET_PRICES_IN_WEI: &str = "getPricesInWei()";
+pub const SIG_GI_GET_PRICES_IN_WEI_WITH_AGG: &str =
+    "getPricesInWeiWithAggregator(address)";
+pub const SIG_GI_GET_PRICES_IN_ARBGAS: &str = "getPricesInArbGas()";
+pub const SIG_GI_GET_PRICES_IN_ARBGAS_WITH_AGG: &str =
+    "getPricesInArbGasWithAggregator(address)";
+pub const SIG_GI_GET_MIN_GAS_PRICE: &str = "getMinimumGasPrice()";
+pub const SIG_GI_GET_L1_BASEFEE_ESTIMATE: &str = "getL1BaseFeeEstimate()";
+pub const SIG_GI_GET_L1_BASEFEE_INERTIA: &str = "getL1BaseFeeEstimateInertia()";
+pub const SIG_GI_GET_L1_REWARD_RATE: &str = "getL1RewardRate()";
+pub const SIG_GI_GET_L1_REWARD_RECIPIENT: &str = "getL1RewardRecipient()";
+pub const SIG_GI_GET_L1_GAS_PRICE_ESTIMATE: &str = "getL1GasPriceEstimate()";
+pub const SIG_GI_GET_CURRENT_TX_L1_FEES: &str = "getCurrentTxL1GasFees()";
+
+/* NodeInterface (virtual at 0xc8) */
+pub const SIG_NI_ESTIMATE_RETRYABLE_TICKET: &str =
+    "estimateRetryableTicket(address,uint256,address,uint256,address,address,bytes)";
+pub const SIG_NI_CONSTRUCT_OUTBOX_PROOF: &str =
+    "constructOutboxProof(uint64,uint64)";
+pub const SIG_NI_FIND_BATCH_CONTAINING_BLOCK: &str =
+    "findBatchContainingBlock(uint64)";
+pub const SIG_NI_GET_L1_CONFIRMATIONS: &str = "getL1Confirmations(bytes32)";
+pub const SIG_NI_GAS_ESTIMATE_COMPONENTS: &str =
+    "gasEstimateComponents(address,bool,bytes)";
+pub const SIG_NI_GAS_ESTIMATE_L1_COMPONENT: &str =
+    "gasEstimateL1Component(address,bool,bytes)";
+pub const SIG_NI_LEGACY_LOOKUP_MESSAGE_BATCH_PROOF: &str =
+    "legacyLookupMessageBatchProof(uint256,uint64)";
+pub const SIG_NI_NITRO_GENESIS_BLOCK: &str = "nitroGenesisBlock()";
+pub const SIG_NI_BLOCK_L1_NUM: &str = "blockL1Num(uint64)";
+pub const SIG_NI_L2_BLOCK_RANGE_FOR_L1: &str = "l2BlockRangeForL1(uint64)";
 
 pub const EVT_TICKET_CREATED: &str =
     "TicketCreated(bytes32,address,uint256,uint256,address,address,uint256,uint256)";
@@ -92,6 +135,8 @@ mod tests {
         assert_eq!(s, sel_again);
         let topic_again = topic(EVT_TICKET_CREATED);
         assert_eq!(t, topic_again);
+    }
+
     #[test]
     fn more_selectors_and_topics_are_derived_consistently() {
         let s1 = selector(SIG_ARB_BLOCK_NUMBER);
@@ -109,5 +154,18 @@ mod tests {
         let t1b = topic(EVT_L2_TO_L1_TX);
         assert_eq!(t1, t1b);
     }
+
+    #[test]
+    fn node_interface_and_gasinfo_selectors_compile() {
+        for sig in [
+            SIG_NI_ESTIMATE_RETRYABLE_TICKET,
+            SIG_NI_GAS_ESTIMATE_COMPONENTS,
+            SIG_NI_GAS_ESTIMATE_L1_COMPONENT,
+            SIG_GI_GET_L1_BASEFEE_ESTIMATE,
+            SIG_AT_REGISTER,
+        ] {
+            let sel = selector(sig);
+            assert_eq!(sel.len(), 4);
+        }
     }
 }
