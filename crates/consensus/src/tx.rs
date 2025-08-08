@@ -580,6 +580,40 @@ pub enum TxTypeError {
 #[cfg(test)]
 mod tests {
     use super::*;
+#[cfg(test)]
+mod tx_type_tests {
+    use super::*;
+
+    #[test]
+    fn arb_tx_type_roundtrip_bytes() {
+        let types = [
+            (ArbTxType::ArbitrumDepositTx, 0x64u8),
+            (ArbTxType::ArbitrumUnsignedTx, 0x65u8),
+            (ArbTxType::ArbitrumContractTx, 0x66u8),
+            (ArbTxType::ArbitrumRetryTx, 0x68u8),
+            (ArbTxType::ArbitrumSubmitRetryableTx, 0x69u8),
+            (ArbTxType::ArbitrumInternalTx, 0x6Au8),
+            (ArbTxType::ArbitrumLegacyTx, 0x78u8),
+        ];
+        for (ty, byte) in types {
+            assert_eq!(ty.as_u8(), byte);
+            let parsed = ArbTxType::from_u8(byte).expect("known type");
+            assert_eq!(parsed, ty);
+        }
+    }
+
+    #[test]
+    fn arb_tx_type_unknown_errors() {
+        for b in [0x00u8, 0x01u8, 0x67u8, 0x6Bu8, 0xFFu8] {
+            let err = ArbTxType::from_u8(b).unwrap_err();
+            match err {
+                TxTypeError::UnknownType(x) => assert_eq!(x, b),
+                TxTypeError::Decode => {}
+            }
+        }
+    }
+}
+
     use alloy_primitives::{address, b256, U256};
 
     #[test]
