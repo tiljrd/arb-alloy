@@ -921,6 +921,73 @@ mod proptests {
             assert_eq!(used, enc.len());
             assert_eq!(dec, env);
         }
+
+        #[test]
+        fn typed_contract_roundtrip(
+            chain_id in arb_u256(),
+            request_id in arb_b256(),
+            from in arb_address(),
+            gas_fee_cap in arb_u256(),
+            gas in any::<u64>(),
+            to in opt_address(),
+            value in arb_u256(),
+            data in small_bytes(),
+        ) {
+            let env = ArbTxEnvelope::Contract(ArbContractTx { chain_id, request_id, from, gas_fee_cap, gas, to, value, data });
+            let enc = env.encode_typed();
+            let (dec, used) = ArbTxEnvelope::decode_typed(&enc).expect("decode");
+            assert_eq!(used, enc.len());
+            assert_eq!(dec, env);
+        }
+
+        #[test]
+        fn typed_retry_roundtrip(
+            chain_id in arb_u256(),
+            nonce in any::<u64>(),
+            from in arb_address(),
+            gas_fee_cap in arb_u256(),
+            gas in any::<u64>(),
+            to in opt_address(),
+            value in arb_u256(),
+            data in small_bytes(),
+            ticket_id in arb_b256(),
+            refund_to in arb_address(),
+            max_refund in arb_u256(),
+            submission_fee_refund in arb_u256(),
+        ) {
+            let env = ArbTxEnvelope::Retry(ArbRetryTx {
+                chain_id, nonce, from, gas_fee_cap, gas, to, value, data, ticket_id, refund_to, max_refund, submission_fee_refund
+            });
+            let enc = env.encode_typed();
+            let (dec, used) = ArbTxEnvelope::decode_typed(&enc).expect("decode");
+            assert_eq!(used, enc.len());
+            assert_eq!(dec, env);
+        }
+
+        #[test]
+        fn typed_submit_retryable_roundtrip(
+            chain_id in arb_u256(),
+            request_id in arb_b256(),
+            from in arb_address(),
+            l1_base_fee in arb_u256(),
+            deposit_value in arb_u256(),
+            gas_fee_cap in arb_u256(),
+            gas in any::<u64>(),
+            retry_to in opt_address(),
+            retry_value in arb_u256(),
+            beneficiary in arb_address(),
+            max_submission_fee in arb_u256(),
+            fee_refund_addr in arb_address(),
+            retry_data in small_bytes(),
+        ) {
+            let env = ArbTxEnvelope::SubmitRetryable(ArbSubmitRetryableTx {
+                chain_id, request_id, from, l1_base_fee, deposit_value, gas_fee_cap, gas, retry_to, retry_value, beneficiary, max_submission_fee, fee_refund_addr, retry_data
+            });
+            let enc = env.encode_typed();
+            let (dec, used) = ArbTxEnvelope::decode_typed(&enc).expect("decode");
+            assert_eq!(used, enc.len());
+            assert_eq!(dec, env);
+        }
     }
 }
 
