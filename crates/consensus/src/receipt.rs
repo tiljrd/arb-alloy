@@ -276,3 +276,59 @@ mod tests {
         assert_eq!(h.payload_length, s.len());
     }
 }
+#[cfg(test)]
+mod proptests {
+    use super::*;
+    use proptest::prelude::*;
+
+    fn arb_bloom() -> impl Strategy<Value = [u8; 256]> {
+        prop::array::uniform256(any::<u8>())
+    }
+    fn arb_addr20() -> impl Strategy<Value = [u8; 20]> {
+        prop::array::uniform20(any::<u8>())
+    }
+    fn arb_topic() -> impl Strategy<Value = [u8; 32]> {
+        prop::array::uniform32(any::<u8>())
+    }
+    fn arb_log() -> impl Strategy<Value = ArbLog> {
+        (arb_addr20(), prop::collection::vec(arb_topic(), 0..4), prop::collection::vec(any::<u8>(), 0..64))
+            .prop_map(|(address, topics, data)| ArbLog { address, topics, data })
+    }
+    fn arb_logs() -> impl Strategy<Value = alloc::vec::Vec<ArbLog>> {
+        prop::collection::vec(arb_log(), 0..3)
+    }
+
+    proptest! {
+        #[test]
+        fn receipt_roundtrip_prop(
+            status in any::<bool>(),
+            cumulative_gas_used in any::<u128>(),
+            logs_bloom in arb_bloom(),
+            logs in arb_logs(),
+        ) {
+            let r = ArbReceiptEnvelope { status, cumulative_gas_used, logs_bloom, logs };
+            let mut out = alloc::vec::Vec::new();
+            r.encode(&mut out);
+            let mut s = out.as_slice();
+            let dec = <ArbReceiptEnvelope as Decodable>::decode(&mut s).expect("decode");
+            assert!(s.is_empty());
+            assert_eq!(dec, r);
+        }
+    }
+}
+
+#[cfg(test)]
+mod golden {
+    use super::*;
+    #[test]
+    #[ignore]
+    fn golden_receipt_roundtrip_matches_nitro_rlp() {
+        let golden: alloc::vec::Vec<u8> = alloc::vec::Vec::new();
+        let mut s = golden.as_slice();
+        let dec = <ArbReceiptEnvelope as Decodable>::decode(&mut s).expect("decode");
+        assert!(s.is_empty());
+        let mut out = alloc::vec::Vec::new();
+        dec.encode(&mut out);
+        assert_eq!(out, golden);
+    }
+}

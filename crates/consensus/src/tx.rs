@@ -872,3 +872,68 @@ mod tests {
         assert!(matches!(env, ArbTxEnvelope::Legacy(_)));
         assert_eq!(used, bytes.len(), "legacy decode should consume full input");
     }
+#[cfg(test)]
+mod proptests {
+    use super::*;
+    use alloc::vec::Vec;
+    use proptest::prelude::*;
+
+    fn arb_address() -> impl Strategy<Value = Address> {
+        prop::array::uniform20(any::<u8>()).prop_map(Address::from)
+    }
+    fn arb_b256() -> impl Strategy<Value = B256> {
+        prop::array::uniform32(any::<u8>()).prop_map(B256::from)
+    }
+    fn arb_u256() -> impl Strategy<Value = U256> {
+        any::<[u8; 32]>().prop_map(U256::from_be_bytes)
+    }
+    fn small_bytes() -> impl Strategy<Value = Vec<u8>> {
+        prop::collection::vec(any::<u8>(), 0..64)
+    }
+    fn opt_address() -> impl Strategy<Value = Option<Address>> {
+        prop_oneof![Just(None), arb_address().prop_map(Some)]
+    }
+
+    proptest! {
+        #[test]
+        fn typed_unsigned_roundtrip(
+            chain_id in arb_u256(),
+            from in arb_address(),
+            nonce in any::<u64>(),
+            gas_fee_cap in arb_u256(),
+            gas in any::<u64>(),
+            to in opt_address(),
+            value in arb_u256(),
+            data in small_bytes(),
+        ) {
+            let env = ArbTxEnvelope::Unsigned(ArbUnsignedTx { chain_id, from, nonce, gas_fee_cap, gas, to, value, data });
+            let enc = env.encode_typed();
+            let (dec, used) = ArbTxEnvelope::decode_typed(&enc).expect("decode");
+            assert_eq!(used, enc.len());
+            assert_eq!(dec, env);
+        }
+
+        #[test]
+        fn typed_internal_roundtrip(chain_id in arb_u256(), data in small_bytes()) {
+            let env = ArbTxEnvelope::Internal(ArbInternalTx { chain_id, data });
+            let enc = env.encode_typed();
+            let (dec, used) = ArbTxEnvelope::decode_typed(&enc).expect("decode");
+            assert_eq!(used, enc.len());
+            assert_eq!(dec, env);
+        }
+    }
+}
+
+#[cfg(test)]
+mod golden {
+    use super::*;
+    #[test]
+    #[ignore]
+    fn golden_unsigned_matches_nitro_rlp() {
+        let golden: alloc::vec::Vec<u8> = alloc::vec::Vec::new();
+        let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
+        assert_eq!(used, golden.len());
+        let out = env.encode_typed();
+        assert_eq!(out, golden);
+    }
+}
