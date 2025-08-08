@@ -1,0 +1,12 @@
+[package]
+name = "arb-alloy-util"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[features]
+default = ["alloc"]
+alloc = []
+
+[dependencies]
+alloy-primitives = { version = "1.3", default-features = false }
