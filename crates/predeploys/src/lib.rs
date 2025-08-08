@@ -47,6 +47,17 @@ pub const SIG_OWNER_GET_NETWORK_FEE_ACCOUNT: &str = "getNetworkFeeAccount()";
 pub const SIG_OWNER_GET_INFRA_FEE_ACCOUNT: &str = "getInfraFeeAccount()";
 pub const SIG_OWNER_SET_NETWORK_FEE_ACCOUNT: &str = "setNetworkFeeAccount(address)";
 pub const SIG_OWNER_SET_INFRA_FEE_ACCOUNT: &str = "setInfraFeeAccount(address)";
+/* ArbRetryableTx */
+pub const SIG_RETRY_GET_LIFETIME: &str = "getLifetime()";
+pub const SIG_RETRY_GET_TIMEOUT: &str = "getTimeout(bytes32)";
+pub const SIG_RETRY_KEEPALIVE: &str = "keepalive(bytes32)";
+pub const SIG_RETRY_GET_BENEFICIARY: &str = "getBeneficiary(bytes32)";
+pub const SIG_RETRY_REDEEM: &str = "redeem(bytes32)";
+pub const SIG_RETRY_CANCEL: &str = "cancel(bytes32)";
+pub const SIG_RETRY_GET_CURRENT_REDEEMER: &str = "getCurrentRedeemer()";
+/* Non-callable but present for explorers */
+pub const SIG_RETRY_SUBMIT_RETRYABLE: &str = "submitRetryable(bytes32,uint256,uint256,uint256,uint256,uint64,uint256,address,address,address,bytes)";
+
 
 
 /* ArbAddressTable */
