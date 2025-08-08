@@ -1,6 +1,8 @@
 #![allow(dead_code)]
 
 extern crate alloc;
+pub const RETRYABLE_LIFETIME_SECONDS: u64 = 7 * 24 * 60 * 60;
+pub const RETRYABLE_REAP_PRICE_UNITS: u64 = 58_000;
 
 use alloc::vec::Vec;
 use alloy_primitives::{keccak256, B256};
@@ -27,6 +29,11 @@ mod tests {
     use super::*;
     use alloy_primitives::{keccak256, B256};
 
+    #[test]
+    fn retryable_constants_match_nitro() {
+        assert_eq!(RETRYABLE_LIFETIME_SECONDS, 7 * 24 * 60 * 60);
+        assert_eq!(RETRYABLE_REAP_PRICE_UNITS, 58_000);
+    }
     #[test]
     fn submission_fee_matches_nitro_formula() {
         let calldata_len = 100usize;
