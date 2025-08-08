@@ -52,7 +52,6 @@ pub const SIG_RETRY_GET_LIFETIME: &str = "getLifetime()";
 pub const SIG_RETRY_GET_TIMEOUT: &str = "getTimeout(bytes32)";
 pub const SIG_RETRY_KEEPALIVE: &str = "keepalive(bytes32)";
 pub const SIG_RETRY_GET_BENEFICIARY: &str = "getBeneficiary(bytes32)";
-pub const SIG_RETRY_REDEEM: &str = "redeem(bytes32)";
 pub const SIG_RETRY_CANCEL: &str = "cancel(bytes32)";
 pub const SIG_RETRY_GET_CURRENT_REDEEMER: &str = "getCurrentRedeemer()";
 /* Non-callable but present for explorers */
