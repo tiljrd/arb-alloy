@@ -500,7 +500,7 @@ impl ArbTxEnvelope {
         }
     }
 
- spi    pub fn encode_typed(&self) -> Vec<u8> {
+     pub fn encode_typed(&self) -> Vec<u8> {
         let mut out = Vec::new();
         out.push(self.tx_type().as_u8());
         match self {
