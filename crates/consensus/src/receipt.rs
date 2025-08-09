@@ -1,5 +1,4 @@
 #![allow(unused)]
-
 #![allow(dead_code)]
 
 extern crate alloc;
@@ -35,7 +34,11 @@ impl Encodable for ArbLog {
             let b = B256::from_slice(t);
             b.encode(&mut topics_bytes);
         }
-        Header { list: true, payload_length: topics_bytes.len() }.encode(&mut tmp);
+        Header {
+            list: true,
+            payload_length: topics_bytes.len(),
+        }
+        .encode(&mut tmp);
         tmp.extend_from_slice(&topics_bytes);
 
         (&self.data[..]).encode(&mut tmp);
@@ -55,12 +58,20 @@ impl Encodable for ArbLog {
             let b = B256::from_slice(t);
             b.encode(&mut topics_bytes);
         }
-        Header { list: true, payload_length: topics_bytes.len() }.encode(&mut tmp);
+        Header {
+            list: true,
+            payload_length: topics_bytes.len(),
+        }
+        .encode(&mut tmp);
         tmp.extend_from_slice(&topics_bytes);
 
         (&self.data[..]).encode(&mut tmp);
 
-        Header { list: true, payload_length: tmp.len() }.encode(out);
+        Header {
+            list: true,
+            payload_length: tmp.len(),
+        }
+        .encode(out);
         out.put_slice(&tmp);
     }
 }
@@ -108,7 +119,11 @@ impl Decodable for ArbLog {
         address.copy_from_slice(addr.as_slice());
 
         *buf = rest;
-        Ok(ArbLog { address, topics, data })
+        Ok(ArbLog {
+            address,
+            topics,
+            data,
+        })
     }
 }
 
@@ -124,7 +139,11 @@ impl Encodable for ArbReceiptEnvelope {
         for log in &self.logs {
             log.encode(&mut logs_bytes);
         }
-        Header { list: true, payload_length: logs_bytes.len() }.encode(&mut tmp);
+        Header {
+            list: true,
+            payload_length: logs_bytes.len(),
+        }
+        .encode(&mut tmp);
         tmp.extend_from_slice(&logs_bytes);
 
         let header_len = alloy_rlp::length_of_length(tmp.len()) + 1;
@@ -142,10 +161,18 @@ impl Encodable for ArbReceiptEnvelope {
         for log in &self.logs {
             log.encode(&mut logs_bytes);
         }
-        Header { list: true, payload_length: logs_bytes.len() }.encode(&mut tmp);
+        Header {
+            list: true,
+            payload_length: logs_bytes.len(),
+        }
+        .encode(&mut tmp);
         tmp.extend_from_slice(&logs_bytes);
 
-        Header { list: true, payload_length: tmp.len() }.encode(out);
+        Header {
+            list: true,
+            payload_length: tmp.len(),
+        }
+        .encode(out);
         out.put_slice(&tmp);
     }
 }
@@ -156,14 +183,11 @@ impl Decodable for ArbReceiptEnvelope {
         let (payload, rest) = buf.split_at(header.payload_length);
         let mut p = payload;
 
-
         let status_u: U256 = Decodable::decode(&mut p)?;
         let status = !status_u.is_zero();
 
-
         let cg_u256: U256 = Decodable::decode(&mut p)?;
         let cumulative_gas_used = cg_u256.to::<u128>();
-
 
         let bloom_header = Header::decode(&mut p)?;
         if bloom_header.list {
@@ -179,7 +203,6 @@ impl Decodable for ArbReceiptEnvelope {
         let mut logs_bloom = [0u8; 256];
         logs_bloom.copy_from_slice(bloom_payload);
         p = rest_after_bloom;
-
 
         let logs_header = Header::decode(&mut p)?;
         if !logs_header.list {
@@ -199,11 +222,18 @@ impl Decodable for ArbReceiptEnvelope {
         p = logs_rest;
 
         if !p.is_empty() {
-            return Err(alloy_rlp::Error::Custom("receipt payload not fully consumed"));
+            return Err(alloy_rlp::Error::Custom(
+                "receipt payload not fully consumed",
+            ));
         }
 
         *buf = rest;
-        Ok(ArbReceiptEnvelope { status, cumulative_gas_used, logs_bloom, logs })
+        Ok(ArbReceiptEnvelope {
+            status,
+            cumulative_gas_used,
+            logs_bloom,
+            logs,
+        })
     }
 }
 
@@ -284,12 +314,11 @@ mod proptests {
     use proptest::prelude::*;
 
     fn arb_bloom() -> impl Strategy<Value = [u8; 256]> {
-        prop::collection::vec(any::<u8>(), 256)
-            .prop_map(|v| {
-                let mut arr = [0u8; 256];
-                arr.copy_from_slice(&v);
-                arr
-            })
+        prop::collection::vec(any::<u8>(), 256).prop_map(|v| {
+            let mut arr = [0u8; 256];
+            arr.copy_from_slice(&v);
+            arr
+        })
     }
     fn arb_addr20() -> impl Strategy<Value = [u8; 20]> {
         prop::array::uniform20(any::<u8>())
@@ -298,8 +327,16 @@ mod proptests {
         prop::array::uniform32(any::<u8>())
     }
     fn arb_log() -> impl Strategy<Value = ArbLog> {
-        (arb_addr20(), prop::collection::vec(arb_topic(), 0..4), prop::collection::vec(any::<u8>(), 0..64))
-            .prop_map(|(address, topics, data)| ArbLog { address, topics, data })
+        (
+            arb_addr20(),
+            prop::collection::vec(arb_topic(), 0..4),
+            prop::collection::vec(any::<u8>(), 0..64),
+        )
+            .prop_map(|(address, topics, data)| ArbLog {
+                address,
+                topics,
+                data,
+            })
     }
     fn arb_logs() -> impl Strategy<Value = alloc::vec::Vec<ArbLog>> {
         prop::collection::vec(arb_log(), 0..3)
