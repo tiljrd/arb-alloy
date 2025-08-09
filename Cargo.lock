@@ -46,6 +46,7 @@ version = "0.1.0"
 dependencies = [
  "alloy-primitives",
  "alloy-rlp",
+ "hex",
  "proptest",
  "thiserror",
 ]
