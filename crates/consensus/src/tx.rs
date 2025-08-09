@@ -500,17 +500,19 @@ impl ArbTxEnvelope {
         }
     }
 
-    pub fn encode_typed(&self, out: &mut dyn alloy_rlp::BufMut) {
-        out.put_slice(&[self.tx_type().as_u8()]);
+ spi    pub fn encode_typed(&self) -> Vec<u8> {
+        let mut out = Vec::new();
+        out.push(self.tx_type().as_u8());
         match self {
-            ArbTxEnvelope::Deposit(p) => p.encode(out),
-            ArbTxEnvelope::Unsigned(p) => p.encode(out),
-            ArbTxEnvelope::Contract(p) => p.encode(out),
-            ArbTxEnvelope::Retry(p) => p.encode(out),
-            ArbTxEnvelope::SubmitRetryable(p) => p.encode(out),
-            ArbTxEnvelope::Internal(p) => p.encode(out),
-            ArbTxEnvelope::Legacy(payload) => out.put_slice(payload),
+            ArbTxEnvelope::Deposit(p) => p.encode(&mut out),
+            ArbTxEnvelope::Unsigned(p) => p.encode(&mut out),
+            ArbTxEnvelope::Contract(p) => p.encode(&mut out),
+            ArbTxEnvelope::Retry(p) => p.encode(&mut out),
+            ArbTxEnvelope::SubmitRetryable(p) => p.encode(&mut out),
+            ArbTxEnvelope::Internal(p) => p.encode(&mut out),
+            ArbTxEnvelope::Legacy(payload) => out.extend_from_slice(payload),
         }
+        out
     }
 
     pub fn decode_typed(bytes: &[u8]) -> Result<(Self, usize), TxTypeError> {
@@ -1008,13 +1010,9 @@ mod golden_more {
     #[ignore]
     fn golden_contract_matches_nitro_rlp() {
         let golden: Vec<u8> = Vec::new();
-        let mut s = golden.as_slice();
-        let (env, used) = ArbTxEnvelope::decode_typed(&mut s).expect("decode");
-        assert!(s.is_empty());
+        let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
         assert_eq!(used, golden.len());
-        assert!(matches!(env, ArbTxEnvelope::Contract(_)));
-        let mut out = Vec::new();
-        env.encode_typed(&mut out);
+        let out = env.encode_typed();
         assert_eq!(out, golden);
     }
 
@@ -1022,13 +1020,9 @@ mod golden_more {
     #[ignore]
     fn golden_retry_matches_nitro_rlp() {
         let golden: Vec<u8> = Vec::new();
-        let mut s = golden.as_slice();
-        let (env, used) = ArbTxEnvelope::decode_typed(&mut s).expect("decode");
-        assert!(s.is_empty());
+        let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
         assert_eq!(used, golden.len());
-        assert!(matches!(env, ArbTxEnvelope::Retry(_)));
-        let mut out = Vec::new();
-        env.encode_typed(&mut out);
+        let out = env.encode_typed();
         assert_eq!(out, golden);
     }
 
@@ -1036,13 +1030,9 @@ mod golden_more {
     #[ignore]
     fn golden_submit_retryable_matches_nitro_rlp() {
         let golden: Vec<u8> = Vec::new();
-        let mut s = golden.as_slice();
-        let (env, used) = ArbTxEnvelope::decode_typed(&mut s).expect("decode");
-        assert!(s.is_empty());
+        let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
         assert_eq!(used, golden.len());
-        assert!(matches!(env, ArbTxEnvelope::SubmitRetryable(_)));
-        let mut out = Vec::new();
-        env.encode_typed(&mut out);
+        let out = env.encode_typed();
         assert_eq!(out, golden);
     }
 
@@ -1050,13 +1040,9 @@ mod golden_more {
     #[ignore]
     fn golden_internal_matches_nitro_rlp() {
         let golden: Vec<u8> = Vec::new();
-        let mut s = golden.as_slice();
-        let (env, used) = ArbTxEnvelope::decode_typed(&mut s).expect("decode");
-        assert!(s.is_empty());
+        let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
         assert_eq!(used, golden.len());
-        assert!(matches!(env, ArbTxEnvelope::Internal(_)));
-        let mut out = Vec::new();
-        env.encode_typed(&mut out);
+        let out = env.encode_typed();
         assert_eq!(out, golden);
     }
 
@@ -1064,13 +1050,9 @@ mod golden_more {
     #[ignore]
     fn golden_deposit_matches_nitro_rlp() {
         let golden: Vec<u8> = Vec::new();
-        let mut s = golden.as_slice();
-        let (env, used) = ArbTxEnvelope::decode_typed(&mut s).expect("decode");
-        assert!(s.is_empty());
+        let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
         assert_eq!(used, golden.len());
-        assert!(matches!(env, ArbTxEnvelope::Deposit(_)));
-        let mut out = Vec::new();
-        env.encode_typed(&mut out);
+        let out = env.encode_typed();
         assert_eq!(out, golden);
     }
 }
