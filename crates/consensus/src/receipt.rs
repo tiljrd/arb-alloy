@@ -41,7 +41,7 @@ impl Encodable for ArbLog {
         .encode(&mut tmp);
         tmp.extend_from_slice(&topics_bytes);
 
-        (&self.data[..]).encode(&mut tmp);
+        self.data[..].encode(&mut tmp);
 
         let header_len = alloy_rlp::length_of_length(tmp.len()) + 1;
         header_len + tmp.len()
@@ -65,7 +65,7 @@ impl Encodable for ArbLog {
         .encode(&mut tmp);
         tmp.extend_from_slice(&topics_bytes);
 
-        (&self.data[..]).encode(&mut tmp);
+        self.data[..].encode(&mut tmp);
 
         Header {
             list: true,
@@ -133,7 +133,7 @@ impl Encodable for ArbReceiptEnvelope {
 
         U256::from(if self.status { 1u8 } else { 0u8 }).encode(&mut tmp);
         U256::from(self.cumulative_gas_used).encode(&mut tmp);
-        (&self.logs_bloom[..]).encode(&mut tmp);
+        self.logs_bloom[..].encode(&mut tmp);
 
         let mut logs_bytes = Vec::new();
         for log in &self.logs {
@@ -155,7 +155,7 @@ impl Encodable for ArbReceiptEnvelope {
 
         U256::from(if self.status { 1u8 } else { 0u8 }).encode(&mut tmp);
         U256::from(self.cumulative_gas_used).encode(&mut tmp);
-        (&self.logs_bloom[..]).encode(&mut tmp);
+        self.logs_bloom[..].encode(&mut tmp);
 
         let mut logs_bytes = Vec::new();
         for log in &self.logs {

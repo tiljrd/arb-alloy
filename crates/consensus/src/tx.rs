@@ -524,30 +524,30 @@ impl ArbTxEnvelope {
         match ty {
             ArbTxType::ArbitrumDepositTx => {
                 let (val, used) = ArbDepositTx::decode_with_used(payload)?;
-                return Ok((ArbTxEnvelope::Deposit(val), used + 1));
+                Ok((ArbTxEnvelope::Deposit(val), used + 1))
             }
             ArbTxType::ArbitrumUnsignedTx => {
                 let (val, used) = ArbUnsignedTx::decode_with_used(payload)?;
-                return Ok((ArbTxEnvelope::Unsigned(val), used + 1));
+                Ok((ArbTxEnvelope::Unsigned(val), used + 1))
             }
             ArbTxType::ArbitrumContractTx => {
                 let (val, used) = ArbContractTx::decode_with_used(payload)?;
-                return Ok((ArbTxEnvelope::Contract(val), used + 1));
+                Ok((ArbTxEnvelope::Contract(val), used + 1))
             }
             ArbTxType::ArbitrumRetryTx => {
                 let (val, used) = ArbRetryTx::decode_with_used(payload)?;
-                return Ok((ArbTxEnvelope::Retry(val), used + 1));
+                Ok((ArbTxEnvelope::Retry(val), used + 1))
             }
             ArbTxType::ArbitrumSubmitRetryableTx => {
                 let (val, used) = ArbSubmitRetryableTx::decode_with_used(payload)?;
-                return Ok((ArbTxEnvelope::SubmitRetryable(val), used + 1));
+                Ok((ArbTxEnvelope::SubmitRetryable(val), used + 1))
             }
             ArbTxType::ArbitrumInternalTx => {
                 let (val, used) = ArbInternalTx::decode_with_used(payload)?;
-                return Ok((ArbTxEnvelope::Internal(val), used + 1));
+                Ok((ArbTxEnvelope::Internal(val), used + 1))
             }
             ArbTxType::ArbitrumLegacyTx => {
-                return Ok((ArbTxEnvelope::Legacy(payload.to_vec()), bytes.len()));
+                Ok((ArbTxEnvelope::Legacy(payload.to_vec()), bytes.len()))
             }
         };
     }
@@ -598,45 +598,6 @@ mod tests {
             let back = ArbTxType::from_u8(b).unwrap();
             assert_eq!(t, back);
         }
-        #[test]
-        fn exact_type_bytes_match_nitro_spec() {
-            assert_eq!(ArbTxType::ArbitrumDepositTx.as_u8(), 0x64);
-            assert_eq!(ArbTxType::ArbitrumUnsignedTx.as_u8(), 0x65);
-            assert_eq!(ArbTxType::ArbitrumContractTx.as_u8(), 0x66);
-            assert_eq!(ArbTxType::ArbitrumRetryTx.as_u8(), 0x68);
-            assert_eq!(ArbTxType::ArbitrumSubmitRetryableTx.as_u8(), 0x69);
-            assert_eq!(ArbTxType::ArbitrumInternalTx.as_u8(), 0x6a);
-            assert_eq!(ArbTxType::ArbitrumLegacyTx.as_u8(), 0x78);
-
-            assert_eq!(
-                ArbTxType::from_u8(0x64).unwrap(),
-                ArbTxType::ArbitrumDepositTx
-            );
-            assert_eq!(
-                ArbTxType::from_u8(0x65).unwrap(),
-                ArbTxType::ArbitrumUnsignedTx
-            );
-            assert_eq!(
-                ArbTxType::from_u8(0x66).unwrap(),
-                ArbTxType::ArbitrumContractTx
-            );
-            assert_eq!(
-                ArbTxType::from_u8(0x68).unwrap(),
-                ArbTxType::ArbitrumRetryTx
-            );
-            assert_eq!(
-                ArbTxType::from_u8(0x69).unwrap(),
-                ArbTxType::ArbitrumSubmitRetryableTx
-            );
-            assert_eq!(
-                ArbTxType::from_u8(0x6a).unwrap(),
-                ArbTxType::ArbitrumInternalTx
-            );
-            assert_eq!(
-                ArbTxType::from_u8(0x78).unwrap(),
-                ArbTxType::ArbitrumLegacyTx
-            );
-        }
     }
 
     #[test]
@@ -677,6 +638,7 @@ mod tests {
             gas_fee_cap: U256::from(1000),
             gas: 50000,
             to: None,
+
             value: U256::ZERO,
             data: vec![],
             ticket_id: b256!("2222222222222222222222222222222222222222222222222222222222222222"),
@@ -716,6 +678,45 @@ mod tests {
         let env = ArbTxEnvelope::Deposit(ArbDepositTx {
             chain_id: U256::from(42161u64),
             l1_request_id: b256!(
+                #[test]
+                fn exact_type_bytes_match_nitro_spec() {
+                    assert_eq!(ArbTxType::ArbitrumDepositTx.as_u8(), 0x64);
+                    assert_eq!(ArbTxType::ArbitrumUnsignedTx.as_u8(), 0x65);
+                    assert_eq!(ArbTxType::ArbitrumContractTx.as_u8(), 0x66);
+                    assert_eq!(ArbTxType::ArbitrumRetryTx.as_u8(), 0x68);
+                    assert_eq!(ArbTxType::ArbitrumSubmitRetryableTx.as_u8(), 0x69);
+                    assert_eq!(ArbTxType::ArbitrumInternalTx.as_u8(), 0x6a);
+                    assert_eq!(ArbTxType::ArbitrumLegacyTx.as_u8(), 0x78);
+
+                    assert_eq!(
+                        ArbTxType::from_u8(0x64).unwrap(),
+                        ArbTxType::ArbitrumDepositTx
+                    );
+                    assert_eq!(
+                        ArbTxType::from_u8(0x65).unwrap(),
+                        ArbTxType::ArbitrumUnsignedTx
+                    );
+                    assert_eq!(
+                        ArbTxType::from_u8(0x66).unwrap(),
+                        ArbTxType::ArbitrumContractTx
+                    );
+                    assert_eq!(
+                        ArbTxType::from_u8(0x68).unwrap(),
+                        ArbTxType::ArbitrumRetryTx
+                    );
+                    assert_eq!(
+                        ArbTxType::from_u8(0x69).unwrap(),
+                        ArbTxType::ArbitrumSubmitRetryableTx
+                    );
+                    assert_eq!(
+                        ArbTxType::from_u8(0x6a).unwrap(),
+                        ArbTxType::ArbitrumInternalTx
+                    );
+                    assert_eq!(
+                        ArbTxType::from_u8(0x78).unwrap(),
+                        ArbTxType::ArbitrumLegacyTx
+                    );
+                },
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
             ),
             from: address!("0000000000000000000000000000000000000001"),
@@ -893,6 +894,7 @@ fn legacy_passthrough_reports_full_length() {
     assert_eq!(used, bytes.len(), "legacy decode should consume full input");
 }
 #[cfg(test)]
+#[allow(unnameable_test_items)]
 mod proptests {
     use super::*;
     use alloc::vec::Vec;
@@ -1012,6 +1014,7 @@ mod proptests {
 }
 
 #[cfg(test)]
+#[allow(unnameable_test_items)]
 mod golden {
     use super::*;
     #[test]
