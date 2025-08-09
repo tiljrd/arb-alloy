@@ -23,21 +23,19 @@ pub const NODE_INTERFACE_DEBUG: [u8; 20] = hex20(0xc9);
 pub const ARB_DEBUG: [u8; 20] = hex20(0xff);
 
 /* ArbSys core */
-pub const SIG_SEND_TX_TO_L1: &str = "sendTxToL1(address,bytes)";
 pub const SIG_WITHDRAW_ETH: &str = "withdrawEth(address)";
-pub const SIG_CREATE_RETRYABLE_TICKET: &str =
-    "createRetryableTicket(address,uint256,uint256,address,address,uint256,uint256,bytes)";
-pub const SIG_RETRY_REDEEM: &str = "redeem(bytes32)";
-pub const SIG_CANCEL_RETRYABLE_TICKET: &str = "cancelRetryableTicket(bytes32)";
+pub const SIG_SEND_TX_TO_L1: &str = "sendTxToL1(address,bytes)";
 pub const SIG_ARB_BLOCK_NUMBER: &str = "arbBlockNumber()";
-pub const SIG_ARB_BLOCK_HASH: &str = "arbBlockHash(uint64)";
-pub const SIG_GET_TX_CALL_VALUE: &str = "getTxCallValue()";
-pub const SIG_GET_TX_ORIGIN: &str = "getTxOrigin()";
-pub const SIG_GET_BLOCK_NUMBER: &str = "getBlockNumber()";
-pub const SIG_GET_BLOCK_HASH: &str = "getBlockHash(uint64)";
-pub const SIG_GET_STORAGE_AT: &str = "getStorageAt(address,bytes32)";
+pub const SIG_ARB_BLOCK_HASH: &str = "arbBlockHash(uint256)";
 pub const SIG_ARB_CHAIN_ID: &str = "arbChainID()";
 pub const SIG_ARB_OS_VERSION: &str = "arbOSVersion()";
+pub const SIG_GET_STORAGE_GAS_AVAILABLE: &str = "getStorageGasAvailable()";
+pub const SIG_IS_TOP_LEVEL_CALL: &str = "isTopLevelCall()";
+pub const SIG_MAP_L1_SENDER_TO_L2_ALIAS: &str =
+    "mapL1SenderContractAddressToL2Alias(address,address)";
+pub const SIG_WAS_MY_CALLERS_ADDRESS_ALIASED: &str = "wasMyCallersAddressAliased()";
+pub const SIG_MY_CALLERS_ADDRESS_WITHOUT_ALIASING: &str = "myCallersAddressWithoutAliasing()";
+pub const SIG_SEND_MERKLE_TREE_STATE: &str = "sendMerkleTreeState()";
 /* ArbOwner */
 pub const SIG_OWNER_ADD_CHAIN_OWNER: &str = "addChainOwner(address)";
 pub const SIG_OWNER_REMOVE_CHAIN_OWNER: &str = "removeChainOwner(address)";
@@ -58,8 +56,6 @@ pub const SIG_RETRY_GET_CURRENT_REDEEMER: &str = "getCurrentRedeemer()";
 /* Non-callable but present for explorers */
 pub const SIG_RETRY_SUBMIT_RETRYABLE: &str = "submitRetryable(bytes32,uint256,uint256,uint256,uint256,uint64,uint256,address,address,address,bytes)";
 
-
-
 /* ArbAddressTable */
 pub const SIG_AT_ADDRESS_EXISTS: &str = "addressExists(address)";
 pub const SIG_AT_COMPRESS: &str = "compress(address)";
@@ -71,11 +67,9 @@ pub const SIG_AT_SIZE: &str = "size()";
 
 /* ArbGasInfo */
 pub const SIG_GI_GET_PRICES_IN_WEI: &str = "getPricesInWei()";
-pub const SIG_GI_GET_PRICES_IN_WEI_WITH_AGG: &str =
-    "getPricesInWeiWithAggregator(address)";
+pub const SIG_GI_GET_PRICES_IN_WEI_WITH_AGG: &str = "getPricesInWeiWithAggregator(address)";
 pub const SIG_GI_GET_PRICES_IN_ARBGAS: &str = "getPricesInArbGas()";
-pub const SIG_GI_GET_PRICES_IN_ARBGAS_WITH_AGG: &str =
-    "getPricesInArbGasWithAggregator(address)";
+pub const SIG_GI_GET_PRICES_IN_ARBGAS_WITH_AGG: &str = "getPricesInArbGasWithAggregator(address)";
 pub const SIG_GI_GET_MIN_GAS_PRICE: &str = "getMinimumGasPrice()";
 pub const SIG_GI_GET_L1_BASEFEE_ESTIMATE: &str = "getL1BaseFeeEstimate()";
 pub const SIG_GI_GET_L1_BASEFEE_INERTIA: &str = "getL1BaseFeeEstimateInertia()";
@@ -87,27 +81,30 @@ pub const SIG_GI_GET_CURRENT_TX_L1_FEES: &str = "getCurrentTxL1GasFees()";
 /* NodeInterface (virtual at 0xc8) */
 pub const SIG_NI_ESTIMATE_RETRYABLE_TICKET: &str =
     "estimateRetryableTicket(address,uint256,address,uint256,address,address,bytes)";
-pub const SIG_NI_CONSTRUCT_OUTBOX_PROOF: &str =
-    "constructOutboxProof(uint64,uint64)";
-pub const SIG_NI_FIND_BATCH_CONTAINING_BLOCK: &str =
-    "findBatchContainingBlock(uint64)";
+pub const SIG_NI_CONSTRUCT_OUTBOX_PROOF: &str = "constructOutboxProof(uint64,uint64)";
+pub const SIG_NI_FIND_BATCH_CONTAINING_BLOCK: &str = "findBatchContainingBlock(uint64)";
 pub const SIG_NI_GET_L1_CONFIRMATIONS: &str = "getL1Confirmations(bytes32)";
-pub const SIG_NI_GAS_ESTIMATE_COMPONENTS: &str =
-    "gasEstimateComponents(address,bool,bytes)";
-pub const SIG_NI_GAS_ESTIMATE_L1_COMPONENT: &str =
-    "gasEstimateL1Component(address,bool,bytes)";
+pub const SIG_NI_GAS_ESTIMATE_COMPONENTS: &str = "gasEstimateComponents(address,bool,bytes)";
+pub const SIG_NI_GAS_ESTIMATE_L1_COMPONENT: &str = "gasEstimateL1Component(address,bool,bytes)";
 pub const SIG_NI_LEGACY_LOOKUP_MESSAGE_BATCH_PROOF: &str =
     "legacyLookupMessageBatchProof(uint256,uint64)";
 pub const SIG_NI_NITRO_GENESIS_BLOCK: &str = "nitroGenesisBlock()";
 pub const SIG_NI_BLOCK_L1_NUM: &str = "blockL1Num(uint64)";
 pub const SIG_NI_L2_BLOCK_RANGE_FOR_L1: &str = "l2BlockRangeForL1(uint64)";
 
-pub const EVT_TICKET_CREATED: &str =
-    "TicketCreated(bytes32,address,uint256,uint256,address,address,uint256,uint256)";
-pub const EVT_TICKET_REDEEMED: &str = "Redeemed(bytes32,address)";
-pub const EVT_TICKET_CANCELED: &str = "Canceled(bytes32,address)";
+pub const EVT_TICKET_CREATED: &str = "TicketCreated(bytes32)";
+pub const EVT_LIFETIME_EXTENDED: &str = "LifetimeExtended(bytes32,uint256)";
+pub const EVT_REDEEM_SCHEDULED: &str =
+    "RedeemScheduled(bytes32,bytes32,uint64,uint64,address,uint256,uint256)";
+pub const EVT_TICKET_CANCELED: &str = "Canceled(bytes32)";
+pub const EVT_REDEEMED_DEPRECATED: &str = "Redeemed(bytes32)";
+
+/* ArbSys events */
 pub const EVT_L2_TO_L1_TX: &str =
-    "L2ToL1Transaction(address,address,uint256,uint256,uint256,uint256,bytes)";
+    "L2ToL1Tx(address,address,uint256,uint256,uint256,uint256,uint256,bytes)";
+pub const EVT_L2_TO_L1_TRANSACTION_DEPRECATED: &str =
+    "L2ToL1Transaction(address,address,uint256,uint256,uint256,uint256,uint256,uint256,uint256,bytes)";
+pub const EVT_SEND_MERKLE_UPDATE: &str = "SendMerkleUpdate(uint256,bytes32,uint256)";
 
 pub fn signature_bytes(sig: &str) -> Vec<u8> {
     sig.as_bytes().to_vec()
@@ -169,8 +166,8 @@ mod tests {
         let s2b = selector(SIG_ARB_BLOCK_HASH);
         assert_eq!(s2, s2b);
 
-        let s3 = selector(SIG_GET_TX_CALL_VALUE);
-        let s3b = selector(SIG_GET_TX_CALL_VALUE);
+        let s3 = selector(SIG_GET_STORAGE_GAS_AVAILABLE);
+        let s3b = selector(SIG_GET_STORAGE_GAS_AVAILABLE);
         assert_eq!(s3, s3b);
 
         let t1 = topic(EVT_L2_TO_L1_TX);

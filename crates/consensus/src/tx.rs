@@ -524,32 +524,32 @@ impl ArbTxEnvelope {
         match ty {
             ArbTxType::ArbitrumDepositTx => {
                 let (val, used) = ArbDepositTx::decode_with_used(payload)?;
-                return Ok((ArbTxEnvelope::Deposit(val), used + 1));
+                Ok((ArbTxEnvelope::Deposit(val), used + 1))
             }
             ArbTxType::ArbitrumUnsignedTx => {
                 let (val, used) = ArbUnsignedTx::decode_with_used(payload)?;
-                return Ok((ArbTxEnvelope::Unsigned(val), used + 1));
+                Ok((ArbTxEnvelope::Unsigned(val), used + 1))
             }
             ArbTxType::ArbitrumContractTx => {
                 let (val, used) = ArbContractTx::decode_with_used(payload)?;
-                return Ok((ArbTxEnvelope::Contract(val), used + 1));
+                Ok((ArbTxEnvelope::Contract(val), used + 1))
             }
             ArbTxType::ArbitrumRetryTx => {
                 let (val, used) = ArbRetryTx::decode_with_used(payload)?;
-                return Ok((ArbTxEnvelope::Retry(val), used + 1));
+                Ok((ArbTxEnvelope::Retry(val), used + 1))
             }
             ArbTxType::ArbitrumSubmitRetryableTx => {
                 let (val, used) = ArbSubmitRetryableTx::decode_with_used(payload)?;
-                return Ok((ArbTxEnvelope::SubmitRetryable(val), used + 1));
+                Ok((ArbTxEnvelope::SubmitRetryable(val), used + 1))
             }
             ArbTxType::ArbitrumInternalTx => {
                 let (val, used) = ArbInternalTx::decode_with_used(payload)?;
-                return Ok((ArbTxEnvelope::Internal(val), used + 1));
+                Ok((ArbTxEnvelope::Internal(val), used + 1))
             }
             ArbTxType::ArbitrumLegacyTx => {
-                return Ok((ArbTxEnvelope::Legacy(payload.to_vec()), bytes.len()));
+                Ok((ArbTxEnvelope::Legacy(payload.to_vec()), bytes.len()))
             }
-        };
+        }
     }
 }
 
@@ -598,25 +598,6 @@ mod tests {
             let back = ArbTxType::from_u8(b).unwrap();
             assert_eq!(t, back);
         }
-    #[test]
-    fn exact_type_bytes_match_nitro_spec() {
-        assert_eq!(ArbTxType::ArbitrumDepositTx.as_u8(), 0x64);
-        assert_eq!(ArbTxType::ArbitrumUnsignedTx.as_u8(), 0x65);
-        assert_eq!(ArbTxType::ArbitrumContractTx.as_u8(), 0x66);
-        assert_eq!(ArbTxType::ArbitrumRetryTx.as_u8(), 0x68);
-        assert_eq!(ArbTxType::ArbitrumSubmitRetryableTx.as_u8(), 0x69);
-        assert_eq!(ArbTxType::ArbitrumInternalTx.as_u8(), 0x6a);
-        assert_eq!(ArbTxType::ArbitrumLegacyTx.as_u8(), 0x78);
-
-        assert_eq!(ArbTxType::from_u8(0x64).unwrap(), ArbTxType::ArbitrumDepositTx);
-        assert_eq!(ArbTxType::from_u8(0x65).unwrap(), ArbTxType::ArbitrumUnsignedTx);
-        assert_eq!(ArbTxType::from_u8(0x66).unwrap(), ArbTxType::ArbitrumContractTx);
-        assert_eq!(ArbTxType::from_u8(0x68).unwrap(), ArbTxType::ArbitrumRetryTx);
-        assert_eq!(ArbTxType::from_u8(0x69).unwrap(), ArbTxType::ArbitrumSubmitRetryableTx);
-        assert_eq!(ArbTxType::from_u8(0x6a).unwrap(), ArbTxType::ArbitrumInternalTx);
-        assert_eq!(ArbTxType::from_u8(0x78).unwrap(), ArbTxType::ArbitrumLegacyTx);
-    }
-
     }
 
     #[test]
@@ -657,6 +638,7 @@ mod tests {
             gas_fee_cap: U256::from(1000),
             gas: 50000,
             to: None,
+
             value: U256::ZERO,
             data: vec![],
             ticket_id: b256!("2222222222222222222222222222222222222222222222222222222222222222"),
@@ -848,33 +830,74 @@ mod tests {
         );
     }
 }
-    #[test]
-    fn decode_typed_rejects_unknown_type() {
-        let mut bad = vec![0xff, 0xc0]; // invalid type byte + minimal payload
-        assert!(matches!(
-            ArbTxEnvelope::decode_typed(&bad),
-            Err(TxTypeError::UnknownType(0xff))
-        ));
-        bad[0] = 0x00; // not an Arbitrum type in this module
-        assert!(matches!(
-            ArbTxEnvelope::decode_typed(&bad),
-            Err(TxTypeError::UnknownType(0x00))
-        ));
-    }
+#[test]
+fn decode_typed_rejects_unknown_type() {
+    let mut bad = vec![0xff, 0xc0]; // invalid type byte + minimal payload
+    assert!(matches!(
+        ArbTxEnvelope::decode_typed(&bad),
+        Err(TxTypeError::UnknownType(0xff))
+    ));
+    bad[0] = 0x00; // not an Arbitrum type in this module
+    assert!(matches!(
+        ArbTxEnvelope::decode_typed(&bad),
+        Err(TxTypeError::UnknownType(0x00))
+    ));
+}
 
-    #[test]
-    fn legacy_passthrough_reports_full_length() {
-        let legacy_payload: Vec<u8> = alloy_rlp::encode(alloy_primitives::U256::from(7u64));
-        let mut bytes = Vec::with_capacity(1 + legacy_payload.len());
-        bytes.push(ArbTxType::ArbitrumLegacyTx.as_u8());
-        bytes.extend_from_slice(&legacy_payload);
-        let (env, used) = ArbTxEnvelope::decode_typed(&bytes).expect("decode");
-        assert!(matches!(env, ArbTxEnvelope::Legacy(_)));
-        assert_eq!(used, bytes.len(), "legacy decode should consume full input");
-    }
+#[test]
+fn legacy_passthrough_reports_full_length() {
+    let legacy_payload: Vec<u8> = alloy_rlp::encode(alloy_primitives::U256::from(7u64));
+    let mut bytes = Vec::with_capacity(1 + legacy_payload.len());
+    bytes.push(ArbTxType::ArbitrumLegacyTx.as_u8());
+    bytes.extend_from_slice(&legacy_payload);
+    let (env, used) = ArbTxEnvelope::decode_typed(&bytes).expect("decode");
+    assert!(matches!(env, ArbTxEnvelope::Legacy(_)));
+    assert_eq!(used, bytes.len(), "legacy decode should consume full input");
+}
 #[cfg(test)]
+#[allow(unnameable_test_items)]
 mod proptests {
     use super::*;
+    #[test]
+    fn exact_type_bytes_match_nitro_spec() {
+        assert_eq!(ArbTxType::ArbitrumDepositTx.as_u8(), 0x64);
+        assert_eq!(ArbTxType::ArbitrumUnsignedTx.as_u8(), 0x65);
+        assert_eq!(ArbTxType::ArbitrumContractTx.as_u8(), 0x66);
+        assert_eq!(ArbTxType::ArbitrumRetryTx.as_u8(), 0x68);
+        assert_eq!(ArbTxType::ArbitrumSubmitRetryableTx.as_u8(), 0x69);
+        assert_eq!(ArbTxType::ArbitrumInternalTx.as_u8(), 0x6a);
+        assert_eq!(ArbTxType::ArbitrumLegacyTx.as_u8(), 0x78);
+
+        assert_eq!(
+            ArbTxType::from_u8(0x64).unwrap(),
+            ArbTxType::ArbitrumDepositTx
+        );
+        assert_eq!(
+            ArbTxType::from_u8(0x65).unwrap(),
+            ArbTxType::ArbitrumUnsignedTx
+        );
+        assert_eq!(
+            ArbTxType::from_u8(0x66).unwrap(),
+            ArbTxType::ArbitrumContractTx
+        );
+        assert_eq!(
+            ArbTxType::from_u8(0x68).unwrap(),
+            ArbTxType::ArbitrumRetryTx
+        );
+        assert_eq!(
+            ArbTxType::from_u8(0x69).unwrap(),
+            ArbTxType::ArbitrumSubmitRetryableTx
+        );
+        assert_eq!(
+            ArbTxType::from_u8(0x6a).unwrap(),
+            ArbTxType::ArbitrumInternalTx
+        );
+        assert_eq!(
+            ArbTxType::from_u8(0x78).unwrap(),
+            ArbTxType::ArbitrumLegacyTx
+        );
+    }
+
     use alloc::vec::Vec;
     use proptest::prelude::*;
 
@@ -992,6 +1015,7 @@ mod proptests {
 }
 
 #[cfg(test)]
+#[allow(unnameable_test_items)]
 mod golden {
     use super::*;
     #[test]
@@ -1003,78 +1027,57 @@ mod golden {
         let out = env.encode_typed();
         assert_eq!(out, golden);
     }
-#[cfg(test)]
-mod golden_more {
-    use super::*;
-    #[test]
-    #[ignore]
-    fn golden_contract_matches_nitro_rlp() {
-        let golden: Vec<u8> = Vec::new();
-        let mut s = golden.as_slice();
-        let (env, used) = ArbTxEnvelope::decode_typed(&mut s).expect("decode");
-        assert!(s.is_empty());
-        assert_eq!(used, golden.len());
-        assert!(matches!(env, ArbTxEnvelope::Contract(_)));
-        let mut out = Vec::new();
-        env.encode_typed(&mut out);
-        assert_eq!(out, golden);
-    }
+    #[cfg(test)]
+    mod golden_more {
+        use super::*;
+        #[test]
+        #[ignore]
+        fn golden_contract_matches_nitro_rlp() {
+            let golden: Vec<u8> = Vec::new();
+            let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
+            assert_eq!(used, golden.len());
+            let out = env.encode_typed();
+            assert_eq!(out, golden);
+        }
 
-    #[test]
-    #[ignore]
-    fn golden_retry_matches_nitro_rlp() {
-        let golden: Vec<u8> = Vec::new();
-        let mut s = golden.as_slice();
-        let (env, used) = ArbTxEnvelope::decode_typed(&mut s).expect("decode");
-        assert!(s.is_empty());
-        assert_eq!(used, golden.len());
-        assert!(matches!(env, ArbTxEnvelope::Retry(_)));
-        let mut out = Vec::new();
-        env.encode_typed(&mut out);
-        assert_eq!(out, golden);
-    }
+        #[test]
+        #[ignore]
+        fn golden_retry_matches_nitro_rlp() {
+            let golden: Vec<u8> = Vec::new();
+            let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
+            assert_eq!(used, golden.len());
+            let out = env.encode_typed();
+            assert_eq!(out, golden);
+        }
 
-    #[test]
-    #[ignore]
-    fn golden_submit_retryable_matches_nitro_rlp() {
-        let golden: Vec<u8> = Vec::new();
-        let mut s = golden.as_slice();
-        let (env, used) = ArbTxEnvelope::decode_typed(&mut s).expect("decode");
-        assert!(s.is_empty());
-        assert_eq!(used, golden.len());
-        assert!(matches!(env, ArbTxEnvelope::SubmitRetryable(_)));
-        let mut out = Vec::new();
-        env.encode_typed(&mut out);
-        assert_eq!(out, golden);
-    }
+        #[test]
+        #[ignore]
+        fn golden_submit_retryable_matches_nitro_rlp() {
+            let golden: Vec<u8> = Vec::new();
+            let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
+            assert_eq!(used, golden.len());
+            let out = env.encode_typed();
+            assert_eq!(out, golden);
+        }
 
-    #[test]
-    #[ignore]
-    fn golden_internal_matches_nitro_rlp() {
-        let golden: Vec<u8> = Vec::new();
-        let mut s = golden.as_slice();
-        let (env, used) = ArbTxEnvelope::decode_typed(&mut s).expect("decode");
-        assert!(s.is_empty());
-        assert_eq!(used, golden.len());
-        assert!(matches!(env, ArbTxEnvelope::Internal(_)));
-        let mut out = Vec::new();
-        env.encode_typed(&mut out);
-        assert_eq!(out, golden);
-    }
+        #[test]
+        #[ignore]
+        fn golden_internal_matches_nitro_rlp() {
+            let golden: Vec<u8> = Vec::new();
+            let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
+            assert_eq!(used, golden.len());
+            let out = env.encode_typed();
+            assert_eq!(out, golden);
+        }
 
-    #[test]
-    #[ignore]
-    fn golden_deposit_matches_nitro_rlp() {
-        let golden: Vec<u8> = Vec::new();
-        let mut s = golden.as_slice();
-        let (env, used) = ArbTxEnvelope::decode_typed(&mut s).expect("decode");
-        assert!(s.is_empty());
-        assert_eq!(used, golden.len());
-        assert!(matches!(env, ArbTxEnvelope::Deposit(_)));
-        let mut out = Vec::new();
-        env.encode_typed(&mut out);
-        assert_eq!(out, golden);
+        #[test]
+        #[ignore]
+        fn golden_deposit_matches_nitro_rlp() {
+            let golden: Vec<u8> = Vec::new();
+            let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
+            assert_eq!(used, golden.len());
+            let out = env.encode_typed();
+            assert_eq!(out, golden);
+        }
     }
-}
-
 }

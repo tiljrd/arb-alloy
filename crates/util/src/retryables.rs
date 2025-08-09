@@ -1,4 +1,3 @@
-
 #![allow(dead_code)]
 
 extern crate alloc;
@@ -88,7 +87,10 @@ mod tests {
     #[test]
     fn retryable_timeout_adds_lifetime_and_saturates() {
         let now = 1_000u64;
-        assert_eq!(retryable_timeout_from(now), now + RETRYABLE_LIFETIME_SECONDS);
+        assert_eq!(
+            retryable_timeout_from(now),
+            now + RETRYABLE_LIFETIME_SECONDS
+        );
         let near_max = u64::MAX - 10;
         let res = retryable_timeout_from(near_max);
         assert_eq!(res, u64::MAX);
