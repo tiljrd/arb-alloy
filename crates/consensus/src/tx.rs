@@ -500,19 +500,17 @@ impl ArbTxEnvelope {
         }
     }
 
-    pub fn encode_typed(&self) -> Vec<u8> {
-        let mut out = Vec::new();
-        out.push(self.tx_type().as_u8());
+    pub fn encode_typed(&self, out: &mut dyn alloy_rlp::BufMut) {
+        out.put_slice(&[self.tx_type().as_u8()]);
         match self {
-            ArbTxEnvelope::Deposit(p) => p.encode(&mut out),
-            ArbTxEnvelope::Unsigned(p) => p.encode(&mut out),
-            ArbTxEnvelope::Contract(p) => p.encode(&mut out),
-            ArbTxEnvelope::Retry(p) => p.encode(&mut out),
-            ArbTxEnvelope::SubmitRetryable(p) => p.encode(&mut out),
-            ArbTxEnvelope::Internal(p) => p.encode(&mut out),
-            ArbTxEnvelope::Legacy(payload) => out.extend_from_slice(payload),
+            ArbTxEnvelope::Deposit(p) => p.encode(out),
+            ArbTxEnvelope::Unsigned(p) => p.encode(out),
+            ArbTxEnvelope::Contract(p) => p.encode(out),
+            ArbTxEnvelope::Retry(p) => p.encode(out),
+            ArbTxEnvelope::SubmitRetryable(p) => p.encode(out),
+            ArbTxEnvelope::Internal(p) => p.encode(out),
+            ArbTxEnvelope::Legacy(payload) => out.put_slice(payload),
         }
-        out
     }
 
     pub fn decode_typed(bytes: &[u8]) -> Result<(Self, usize), TxTypeError> {
