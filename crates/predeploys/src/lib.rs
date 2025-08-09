@@ -27,7 +27,6 @@ pub const SIG_SEND_TX_TO_L1: &str = "sendTxToL1(address,bytes)";
 pub const SIG_WITHDRAW_ETH: &str = "withdrawEth(address)";
 pub const SIG_CREATE_RETRYABLE_TICKET: &str =
     "createRetryableTicket(address,uint256,uint256,address,address,uint256,uint256,bytes)";
-pub const SIG_RETRY_REDEEM: &str = "redeem(bytes32)";
 pub const SIG_CANCEL_RETRYABLE_TICKET: &str = "cancelRetryableTicket(bytes32)";
 pub const SIG_ARB_BLOCK_NUMBER: &str = "arbBlockNumber()";
 pub const SIG_ARB_BLOCK_HASH: &str = "arbBlockHash(uint64)";
