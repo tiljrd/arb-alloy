@@ -57,13 +57,17 @@ mod tests {
         let base_units = 10_000u128;
         let padded = L1PricingState::apply_estimation_padding(base_units);
         let expected_added = base_units + ESTIMATION_PADDING_UNITS as u128;
-        let expected = expected_added * (ONE_IN_BIPS as u128 + ESTIMATION_PADDING_BASIS_POINTS as u128) / ONE_IN_BIPS as u128;
+        let expected = expected_added
+            * (ONE_IN_BIPS as u128 + ESTIMATION_PADDING_BASIS_POINTS as u128)
+            / ONE_IN_BIPS as u128;
         assert_eq!(padded, expected);
     }
 
     #[test]
     fn poster_data_cost_from_units_multiplies_by_price_per_unit() {
-        let state = L1PricingState { l1_base_fee_wei: 1_000 };
+        let state = L1PricingState {
+            l1_base_fee_wei: 1_000,
+        };
         assert_eq!(state.poster_data_cost_from_units(0), 0);
         assert_eq!(state.poster_data_cost_from_units(1), 1_000);
         assert_eq!(state.poster_data_cost_from_units(10), 10_000);
@@ -71,7 +75,9 @@ mod tests {
 
     #[test]
     fn poster_data_cost_estimate_from_len_pipeline() {
-        let state = L1PricingState { l1_base_fee_wei: 1_000 };
+        let state = L1PricingState {
+            l1_base_fee_wei: 1_000,
+        };
         let len = 100u64;
         let (cost, padded_units) = state.poster_data_cost_estimate_from_len(len);
         let expected_units = L1PricingState::poster_units_from_brotli_len(len);
@@ -82,7 +88,9 @@ mod tests {
 
     #[test]
     fn poster_data_cost_multiplies_base_fee_by_data_gas() {
-        let state = L1PricingState { l1_base_fee_wei: 1_000 };
+        let state = L1PricingState {
+            l1_base_fee_wei: 1_000,
+        };
         assert_eq!(state.poster_data_cost(123456789), 123_456_789_000);
     }
 
@@ -97,7 +105,10 @@ mod tests {
     fn apply_estimation_padding_is_monotonic() {
         let a = 10_000u128;
         let b = 50_000u128;
-        assert!(L1PricingState::apply_estimation_padding(a) < L1PricingState::apply_estimation_padding(b));
+        assert!(
+            L1PricingState::apply_estimation_padding(a)
+                < L1PricingState::apply_estimation_padding(b)
+        );
     }
     #[test]
     fn poster_units_monotonic_in_len() {
@@ -117,7 +128,9 @@ mod tests {
             assert!(padded >= units);
             let min_expected = units + ESTIMATION_PADDING_UNITS as u128;
             assert!(padded >= min_expected);
-            let max_expected = (min_expected * (ONE_IN_BIPS as u128 + ESTIMATION_PADDING_BASIS_POINTS as u128)) / ONE_IN_BIPS as u128;
+            let max_expected = (min_expected
+                * (ONE_IN_BIPS as u128 + ESTIMATION_PADDING_BASIS_POINTS as u128))
+                / ONE_IN_BIPS as u128;
             assert!(padded <= max_expected + 1);
         }
     }
@@ -132,10 +145,14 @@ mod tests {
         let fees: [u128; 4] = [0, 1, 10, 123_456_789];
         for units in units_list {
             for fee in fees {
-                let st = L1PricingState { l1_base_fee_wei: fee };
-                assert_eq!(st.poster_data_cost_from_units(units), units.saturating_mul(fee));
+                let st = L1PricingState {
+                    l1_base_fee_wei: fee,
+                };
+                assert_eq!(
+                    st.poster_data_cost_from_units(units),
+                    units.saturating_mul(fee)
+                );
             }
         }
     }
-
 }

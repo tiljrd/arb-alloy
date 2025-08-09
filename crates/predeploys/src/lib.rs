@@ -56,8 +56,6 @@ pub const SIG_RETRY_GET_CURRENT_REDEEMER: &str = "getCurrentRedeemer()";
 /* Non-callable but present for explorers */
 pub const SIG_RETRY_SUBMIT_RETRYABLE: &str = "submitRetryable(bytes32,uint256,uint256,uint256,uint256,uint64,uint256,address,address,address,bytes)";
 
-
-
 /* ArbAddressTable */
 pub const SIG_AT_ADDRESS_EXISTS: &str = "addressExists(address)";
 pub const SIG_AT_COMPRESS: &str = "compress(address)";
@@ -69,11 +67,9 @@ pub const SIG_AT_SIZE: &str = "size()";
 
 /* ArbGasInfo */
 pub const SIG_GI_GET_PRICES_IN_WEI: &str = "getPricesInWei()";
-pub const SIG_GI_GET_PRICES_IN_WEI_WITH_AGG: &str =
-    "getPricesInWeiWithAggregator(address)";
+pub const SIG_GI_GET_PRICES_IN_WEI_WITH_AGG: &str = "getPricesInWeiWithAggregator(address)";
 pub const SIG_GI_GET_PRICES_IN_ARBGAS: &str = "getPricesInArbGas()";
-pub const SIG_GI_GET_PRICES_IN_ARBGAS_WITH_AGG: &str =
-    "getPricesInArbGasWithAggregator(address)";
+pub const SIG_GI_GET_PRICES_IN_ARBGAS_WITH_AGG: &str = "getPricesInArbGasWithAggregator(address)";
 pub const SIG_GI_GET_MIN_GAS_PRICE: &str = "getMinimumGasPrice()";
 pub const SIG_GI_GET_L1_BASEFEE_ESTIMATE: &str = "getL1BaseFeeEstimate()";
 pub const SIG_GI_GET_L1_BASEFEE_INERTIA: &str = "getL1BaseFeeEstimateInertia()";
@@ -85,15 +81,11 @@ pub const SIG_GI_GET_CURRENT_TX_L1_FEES: &str = "getCurrentTxL1GasFees()";
 /* NodeInterface (virtual at 0xc8) */
 pub const SIG_NI_ESTIMATE_RETRYABLE_TICKET: &str =
     "estimateRetryableTicket(address,uint256,address,uint256,address,address,bytes)";
-pub const SIG_NI_CONSTRUCT_OUTBOX_PROOF: &str =
-    "constructOutboxProof(uint64,uint64)";
-pub const SIG_NI_FIND_BATCH_CONTAINING_BLOCK: &str =
-    "findBatchContainingBlock(uint64)";
+pub const SIG_NI_CONSTRUCT_OUTBOX_PROOF: &str = "constructOutboxProof(uint64,uint64)";
+pub const SIG_NI_FIND_BATCH_CONTAINING_BLOCK: &str = "findBatchContainingBlock(uint64)";
 pub const SIG_NI_GET_L1_CONFIRMATIONS: &str = "getL1Confirmations(bytes32)";
-pub const SIG_NI_GAS_ESTIMATE_COMPONENTS: &str =
-    "gasEstimateComponents(address,bool,bytes)";
-pub const SIG_NI_GAS_ESTIMATE_L1_COMPONENT: &str =
-    "gasEstimateL1Component(address,bool,bytes)";
+pub const SIG_NI_GAS_ESTIMATE_COMPONENTS: &str = "gasEstimateComponents(address,bool,bytes)";
+pub const SIG_NI_GAS_ESTIMATE_L1_COMPONENT: &str = "gasEstimateL1Component(address,bool,bytes)";
 pub const SIG_NI_LEGACY_LOOKUP_MESSAGE_BATCH_PROOF: &str =
     "legacyLookupMessageBatchProof(uint256,uint64)";
 pub const SIG_NI_NITRO_GENESIS_BLOCK: &str = "nitroGenesisBlock()";
