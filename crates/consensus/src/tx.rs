@@ -3,7 +3,7 @@
 extern crate alloc;
 
 use alloc::vec::Vec;
-use alloy_primitives::{Address, B256, U256};
+use alloy_primitives::{Address, Bytes, B256, U256};
 use alloy_rlp::{Decodable, Encodable, RlpDecodable, RlpEncodable};
 use core::fmt;
 use thiserror::Error;
@@ -72,7 +72,7 @@ pub struct ArbUnsignedTx {
     pub gas: u64,
     pub to: Option<Address>,
     pub value: U256,
-    pub data: Vec<u8>,
+    pub data: Bytes,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -84,7 +84,7 @@ pub struct ArbContractTx {
     pub gas: u64,
     pub to: Option<Address>,
     pub value: U256,
-    pub data: Vec<u8>,
+    pub data: Bytes,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -96,7 +96,7 @@ pub struct ArbRetryTx {
     pub gas: u64,
     pub to: Option<Address>,
     pub value: U256,
-    pub data: Vec<u8>,
+    pub data: Bytes,
     pub ticket_id: B256,
     pub refund_to: Address,
     pub max_refund: U256,
@@ -117,7 +117,7 @@ pub struct ArbSubmitRetryableTx {
     pub beneficiary: Address,
     pub max_submission_fee: U256,
     pub fee_refund_addr: Address,
-    pub retry_data: Vec<u8>,
+    pub retry_data: Bytes,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, RlpEncodable, RlpDecodable)]
@@ -132,7 +132,7 @@ pub struct ArbDepositTx {
 #[derive(Clone, Debug, PartialEq, Eq, RlpEncodable, RlpDecodable)]
 pub struct ArbInternalTx {
     pub chain_id: U256,
-    pub data: Vec<u8>,
+    pub data: Bytes,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -205,7 +205,7 @@ impl Decodable for ArbUnsignedTx {
         let gas: u64 = Decodable::decode(&mut p)?;
         let to: Option<Address> = decode_option_address(&mut p)?;
         let value: U256 = Decodable::decode(&mut p)?;
-        let data: Vec<u8> = Decodable::decode(&mut p)?;
+        let data: Bytes = Decodable::decode(&mut p)?;
         *buf = rest;
         Ok(ArbUnsignedTx {
             chain_id,
@@ -279,7 +279,7 @@ impl Decodable for ArbContractTx {
         let gas: u64 = Decodable::decode(&mut p)?;
         let to: Option<Address> = decode_option_address(&mut p)?;
         let value: U256 = Decodable::decode(&mut p)?;
-        let data: Vec<u8> = Decodable::decode(&mut p)?;
+        let data: Bytes = Decodable::decode(&mut p)?;
         *buf = rest;
         Ok(ArbContractTx {
             chain_id,
@@ -365,7 +365,7 @@ impl Decodable for ArbRetryTx {
         let gas: u64 = Decodable::decode(&mut p)?;
         let to: Option<Address> = decode_option_address(&mut p)?;
         let value: U256 = Decodable::decode(&mut p)?;
-        let data: Vec<u8> = Decodable::decode(&mut p)?;
+        let data: Bytes = Decodable::decode(&mut p)?;
         let ticket_id: B256 = Decodable::decode(&mut p)?;
         let refund_to: Address = Decodable::decode(&mut p)?;
         let max_refund: U256 = Decodable::decode(&mut p)?;
@@ -467,7 +467,7 @@ impl Decodable for ArbSubmitRetryableTx {
         let beneficiary: Address = Decodable::decode(&mut p)?;
         let max_submission_fee: U256 = Decodable::decode(&mut p)?;
         let fee_refund_addr: Address = Decodable::decode(&mut p)?;
-        let retry_data: Vec<u8> = Decodable::decode(&mut p)?;
+        let retry_data: Bytes = Decodable::decode(&mut p)?;
         *buf = rest;
         Ok(ArbSubmitRetryableTx {
             chain_id,
@@ -619,7 +619,7 @@ mod tests {
             gas: 21000,
             to: None,
             value: U256::from(0u64),
-            data: Vec::new(),
+            data: Vec::new().into(),
         });
         let con = ArbTxEnvelope::Contract(ArbContractTx {
             chain_id: U256::from(42161u64),
@@ -629,7 +629,7 @@ mod tests {
             gas: 100000,
             to: Some(address!("0000000000000000000000000000000000000005")),
             value: U256::from(123),
-            data: vec![0xaa, 0xbb],
+            data: vec![0xaa, 0xbb].into(),
         });
         let rty = ArbTxEnvelope::Retry(ArbRetryTx {
             chain_id: U256::from(42161u64),
@@ -640,7 +640,7 @@ mod tests {
             to: None,
 
             value: U256::ZERO,
-            data: vec![],
+            data: Vec::<u8>::new().into(),
             ticket_id: b256!("2222222222222222222222222222222222222222222222222222222222222222"),
             refund_to: address!("0000000000000000000000000000000000000007"),
             max_refund: U256::from(10),
@@ -659,11 +659,11 @@ mod tests {
             beneficiary: address!("0000000000000000000000000000000000000010"),
             max_submission_fee: U256::from(55),
             fee_refund_addr: address!("0000000000000000000000000000000000000011"),
-            retry_data: vec![0xde, 0xad, 0xbe, 0xef],
+            retry_data: vec![0xde, 0xad, 0xbe, 0xef].into(),
         });
         let itx = ArbTxEnvelope::Internal(ArbInternalTx {
             chain_id: U256::from(42161u64),
-            data: vec![0x01],
+            data: vec![0x01].into(),
         });
 
         for env in [dep, uns, con, rty, srt, itx] {
@@ -699,7 +699,7 @@ mod tests {
             gas: 21000,
             to: None,
             value: U256::from(0u64),
-            data: Vec::new(),
+            data: Vec::new().into(),
         });
         let enc = env.encode_typed();
         let (dec, _used) = ArbTxEnvelope::decode_typed(&enc).unwrap();
@@ -716,7 +716,7 @@ mod tests {
             gas: 100000,
             to: Some(address!("0000000000000000000000000000000000000005")),
             value: U256::from(123),
-            data: vec![0xaa, 0xbb],
+            data: vec![0xaa, 0xbb].into(),
         });
         let enc = env.encode_typed();
         let (dec, _used) = ArbTxEnvelope::decode_typed(&enc).unwrap();
@@ -733,7 +733,7 @@ mod tests {
             gas: 50000,
             to: None,
             value: U256::ZERO,
-            data: vec![],
+            data: Vec::<u8>::new().into(),
             ticket_id: b256!("2222222222222222222222222222222222222222222222222222222222222222"),
             refund_to: address!("0000000000000000000000000000000000000007"),
             max_refund: U256::from(10),
@@ -759,7 +759,7 @@ mod tests {
             beneficiary: address!("0000000000000000000000000000000000000010"),
             max_submission_fee: U256::from(55),
             fee_refund_addr: address!("0000000000000000000000000000000000000011"),
-            retry_data: vec![0xde, 0xad, 0xbe, 0xef],
+            retry_data: vec![0xde, 0xad, 0xbe, 0xef].into(),
         });
         let enc = env.encode_typed();
         let (dec, _used) = ArbTxEnvelope::decode_typed(&enc).unwrap();
@@ -770,7 +770,7 @@ mod tests {
     fn roundtrip_internal_only() {
         let env = ArbTxEnvelope::Internal(ArbInternalTx {
             chain_id: U256::from(42161u64),
-            data: vec![0x01],
+            data: vec![0x01].into(),
         });
         let enc = env.encode_typed();
         let (dec, _used) = ArbTxEnvelope::decode_typed(&enc).unwrap();
@@ -786,7 +786,7 @@ mod tests {
             gas: 21000,
             to: None,
             value: U256::from(0u64),
-            data: Vec::new(),
+            data: Vec::new().into(),
         });
         let enc = env.encode_typed();
         let payload = &enc[1..];
@@ -811,7 +811,7 @@ mod tests {
             gas: 50000,
             to: None,
             value: U256::ZERO,
-            data: vec![],
+            data: Vec::<u8>::new().into(),
             ticket_id: b256!("2222222222222222222222222222222222222222222222222222222222222222"),
             refund_to: address!("0000000000000000000000000000000000000007"),
             max_refund: U256::from(10),
@@ -898,7 +898,6 @@ mod proptests {
         );
     }
 
-    use alloc::vec::Vec;
     use proptest::prelude::*;
 
     fn arb_address() -> impl Strategy<Value = Address> {
@@ -910,8 +909,8 @@ mod proptests {
     fn arb_u256() -> impl Strategy<Value = U256> {
         any::<[u8; 32]>().prop_map(U256::from_be_bytes)
     }
-    fn small_bytes() -> impl Strategy<Value = Vec<u8>> {
-        prop::collection::vec(any::<u8>(), 0..64)
+    fn small_bytes() -> impl Strategy<Value = Bytes> {
+        prop::collection::vec(any::<u8>(), 0..64).prop_map(Bytes::from)
     }
     fn opt_address() -> impl Strategy<Value = Option<Address>> {
         prop_oneof![Just(None), arb_address().prop_map(Some)]
@@ -1019,9 +1018,9 @@ mod proptests {
 mod golden {
     use super::*;
     #[test]
-    #[ignore]
     fn golden_unsigned_matches_nitro_rlp() {
-        let golden: alloc::vec::Vec<u8> = alloc::vec::Vec::new();
+        let hex = "65f84082a4b194000000000000000000000000000000000000000107843b9aca0082520894000000000000000000000000000000000000000284075bcd1584deadbeef";
+        let golden = hex::decode(hex).expect("hex decode");
         let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
         assert_eq!(used, golden.len());
         let out = env.encode_typed();
@@ -1031,9 +1030,9 @@ mod golden {
     mod golden_more {
         use super::*;
         #[test]
-        #[ignore]
         fn golden_contract_matches_nitro_rlp() {
-            let golden: Vec<u8> = Vec::new();
+            let hex = "66f85a82a4b1a00102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f00940000000000000000000000000000000000000001847735940082c3509400000000000000000000000000000000000000020582cafe";
+            let golden = hex::decode(hex).expect("hex decode");
             let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
             assert_eq!(used, golden.len());
             let out = env.encode_typed();
@@ -1041,9 +1040,9 @@ mod golden {
         }
 
         #[test]
-        #[ignore]
         fn golden_retry_matches_nitro_rlp() {
-            let golden: Vec<u8> = Vec::new();
+            let hex = "68f87882a4b10194000000000000000000000000000000000000000184b2d05e00830124f89400000000000000000000000000000000000000020983aabbcca01112131415161718191a1b1c1d1e1f001112131415161718191a1b1c1d1e1f009400000000000000000000000000000000000000038203e88201f4";
+            let golden = hex::decode(hex).expect("hex decode");
             let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
             assert_eq!(used, golden.len());
             let out = env.encode_typed();
@@ -1051,9 +1050,9 @@ mod golden {
         }
 
         #[test]
-        #[ignore]
         fn golden_submit_retryable_matches_nitro_rlp() {
-            let golden: Vec<u8> = Vec::new();
+            let hex = "69f88c82a4b1a00102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f00940000000000000000000000000000000000000001648207d084ee6b28008301d4c09400000000000000000000000000000000000000022a940000000000000000000000000000000000000003820309940000000000000000000000000000000000000004820102";
+            let golden = hex::decode(hex).expect("hex decode");
             let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
             assert_eq!(used, golden.len());
             let out = env.encode_typed();
@@ -1061,19 +1060,44 @@ mod golden {
         }
 
         #[test]
-        #[ignore]
         fn golden_internal_matches_nitro_rlp() {
-            let golden: Vec<u8> = Vec::new();
+            let hex = "6ac582a4b18199";
+            let golden = hex::decode(hex).expect("hex decode");
             let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
             assert_eq!(used, golden.len());
             let out = env.encode_typed();
             assert_eq!(out, golden);
         }
+        #[test]
+        fn golden_internal_payload_decodes_direct() {
+            let hex = "c582a4b18199";
+            let golden = hex::decode(hex).expect("hex decode");
+            let (env, _used) =
+                <ArbInternalTx as super::RlpDecodeWithUsed>::decode_with_used(&golden)
+                    .expect("decode internal payload");
+            assert_eq!(env.chain_id, U256::from(42161u64));
+            assert_eq!(env.data, Bytes::from(vec![0x99]));
+        }
+        #[test]
+        fn golden_internal_payload_manual_rlp_steps() {
+            use alloy_rlp::{Decodable as _, Header};
+            let hex = "c582a4b18199";
+            let mut bytes = hex::decode(hex).expect("hex decode");
+            let mut s = bytes.as_slice();
+            let header = Header::decode(&mut s).expect("header");
+            assert!(header.list);
+            assert_eq!(header.payload_length, s.len());
+            let chain: U256 = Decodable::decode(&mut s).expect("chain");
+            assert_eq!(chain, U256::from(42161u64));
+            let data: Bytes = Decodable::decode(&mut s).expect("data");
+            assert_eq!(data, Bytes::from(vec![0x99]));
+            assert!(s.is_empty());
+        }
 
         #[test]
-        #[ignore]
         fn golden_deposit_matches_nitro_rlp() {
-            let golden: Vec<u8> = Vec::new();
+            let hex = "64f84f82a4b1a00102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f0094000000000000000000000000000000000000000194000000000000000000000000000000000000000280";
+            let golden = hex::decode(hex).expect("hex decode");
             let (env, used) = ArbTxEnvelope::decode_typed(&golden).expect("decode");
             assert_eq!(used, golden.len());
             let out = env.encode_typed();
