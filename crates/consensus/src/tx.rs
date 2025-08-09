@@ -1080,9 +1080,9 @@ mod golden {
         }
         #[test]
         fn golden_internal_payload_manual_rlp_steps() {
-            use alloy_rlp::{Decodable as _, Header};
+            use alloy_rlp::Header;
             let hex = "c582a4b18199";
-            let mut bytes = hex::decode(hex).expect("hex decode");
+            let bytes = hex::decode(hex).expect("hex decode");
             let mut s = bytes.as_slice();
             let header = Header::decode(&mut s).expect("header");
             assert!(header.list);
