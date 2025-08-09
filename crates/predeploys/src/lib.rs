@@ -91,6 +91,16 @@ pub const SIG_NI_LEGACY_LOOKUP_MESSAGE_BATCH_PROOF: &str =
     "legacyLookupMessageBatchProof(uint256,uint64)";
 pub const SIG_NI_NITRO_GENESIS_BLOCK: &str = "nitroGenesisBlock()";
 pub const SIG_NI_BLOCK_L1_NUM: &str = "blockL1Num(uint64)";
+/* NodeInterfaceDebug (virtual at 0xc9) */
+pub const SIG_NID_RETRYABLE_DETAILS: &str = "getRetryable(bytes32)";
+pub const SIG_NID_BLOOM_GAS_USED: &str = "bloomGasUsed(uint64)";
+pub const SIG_NID_BLOOM_LOGS: &str = "bloomLogs(uint64)";
+pub const SIG_NID_BLOOM_SIZE: &str = "bloomSize(uint64)";
+pub const SIG_NID_BLOOM_STEPS: &str = "bloomBuildSteps(uint64)";
+pub const SIG_NID_L2_TO_L1_LOGS: &str = "l2ToL1LogsHash(uint64)";
+pub const SIG_NID_SEND_ROOT: &str = "sendRoot(uint64)";
+pub const SIG_NID_SEND_ROOT_TIME: &str = "sendRootTime(uint64)";
+
 pub const SIG_NI_L2_BLOCK_RANGE_FOR_L1: &str = "l2BlockRangeForL1(uint64)";
 
 /* ArbInfo */
