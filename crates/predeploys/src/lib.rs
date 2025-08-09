@@ -10,6 +10,7 @@ pub const ARB_SYS: [u8; 20] = hex20(0x64);
 pub const ARB_ADDRESS_TABLE: [u8; 20] = hex20(0x66);
 pub const ARB_BLS: [u8; 20] = hex20(0x67);
 pub const ARB_FUNCTION_TABLE: [u8; 20] = hex20(0x68);
+pub const ARB_INFO: [u8; 20] = hex20(0x65);
 pub const ARB_GAS_INFO: [u8; 20] = hex20(0x6c);
 pub const ARB_OWNER_PUBLIC: [u8; 20] = hex20(0x6b);
 pub const ARB_RETRYABLE_TX: [u8; 20] = hex20(0x6e);
@@ -91,6 +92,65 @@ pub const SIG_NI_LEGACY_LOOKUP_MESSAGE_BATCH_PROOF: &str =
 pub const SIG_NI_NITRO_GENESIS_BLOCK: &str = "nitroGenesisBlock()";
 pub const SIG_NI_BLOCK_L1_NUM: &str = "blockL1Num(uint64)";
 pub const SIG_NI_L2_BLOCK_RANGE_FOR_L1: &str = "l2BlockRangeForL1(uint64)";
+
+/* ArbInfo */
+pub const SIG_INFO_GET_BALANCE: &str = "getBalance(address)";
+pub const SIG_INFO_GET_CODE: &str = "getCode(address)";
+
+/* ArbFunctionTable */
+pub const SIG_FT_UPLOAD: &str = "upload(bytes)";
+pub const SIG_FT_SIZE: &str = "size(address)";
+pub const SIG_FT_GET: &str = "get(address,uint256)";
+
+/* ArbStatistics */
+pub const SIG_STATS_GET_STATS: &str = "getStats()";
+
+/* ArbWasm */
+pub const SIG_WASM_ACTIVATE_PROGRAM: &str = "activateProgram(address)";
+pub const SIG_WASM_STYLUS_VERSION: &str = "stylusVersion()";
+pub const SIG_WASM_CODEHASH_VERSION: &str = "codehashVersion(bytes32)";
+pub const SIG_WASM_CODEHASH_KEEPALIVE: &str = "codehashKeepalive(bytes32)";
+pub const SIG_WASM_CODEHASH_ASM_SIZE: &str = "codehashAsmSize(bytes32)";
+pub const SIG_WASM_PROGRAM_VERSION: &str = "programVersion(address)";
+pub const SIG_WASM_PROGRAM_INIT_GAS: &str = "programInitGas(address)";
+pub const SIG_WASM_PROGRAM_MEMORY_FOOTPRINT: &str = "programMemoryFootprint(address)";
+pub const SIG_WASM_PROGRAM_TIME_LEFT: &str = "programTimeLeft(address)";
+pub const SIG_WASM_INK_PRICE: &str = "inkPrice()";
+pub const SIG_WASM_MAX_STACK_DEPTH: &str = "maxStackDepth()";
+pub const SIG_WASM_FREE_PAGES: &str = "freePages()";
+pub const SIG_WASM_PAGE_GAS: &str = "pageGas()";
+pub const SIG_WASM_PAGE_RAMP: &str = "pageRamp()";
+pub const SIG_WASM_PAGE_LIMIT: &str = "pageLimit()";
+pub const SIG_WASM_MIN_INIT_GAS: &str = "minInitGas()";
+pub const SIG_WASM_INIT_COST_SCALAR: &str = "initCostScalar()";
+pub const SIG_WASM_EXPIRY_DAYS: &str = "expiryDays()";
+pub const SIG_WASM_KEEPALIVE_DAYS: &str = "keepaliveDays()";
+pub const SIG_WASM_BLOCK_CACHE_SIZE: &str = "blockCacheSize()";
+
+/* ArbWasmCache */
+pub const SIG_WASMC_IS_CACHE_MANAGER: &str = "isCacheManager(address)";
+pub const SIG_WASMC_ALL_CACHE_MANAGERS: &str = "allCacheManagers()";
+pub const SIG_WASMC_CACHE_CODEHASH: &str = "cacheCodehash(bytes32)";
+pub const SIG_WASMC_CACHE_PROGRAM: &str = "cacheProgram(address)";
+pub const SIG_WASMC_EVICT_CODEHASH: &str = "evictCodehash(bytes32)";
+pub const SIG_WASMC_CODEHASH_IS_CACHED: &str = "codehashIsCached(bytes32)";
+
+/* ArbNativeTokenManager */
+pub const SIG_NTM_MINT_NATIVE_TOKEN: &str = "mintNativeToken(uint256)";
+pub const SIG_NTM_BURN_NATIVE_TOKEN: &str = "burnNativeToken(uint256)";
+
+/* ArbOwnerPublic */
+pub const SIG_OWNER_PUB_IS_CHAIN_OWNER: &str = "isChainOwner(address)";
+pub const SIG_OWNER_PUB_RECTIFY_CHAIN_OWNER: &str = "rectifyChainOwner(address)";
+pub const SIG_OWNER_PUB_GET_ALL_CHAIN_OWNERS: &str = "getAllChainOwners()";
+pub const SIG_OWNER_PUB_IS_NATIVE_TOKEN_OWNER: &str = "isNativeTokenOwner(address)";
+pub const SIG_OWNER_PUB_GET_ALL_NATIVE_TOKEN_OWNERS: &str = "getAllNativeTokenOwners()";
+pub const SIG_OWNER_PUB_GET_NETWORK_FEE_ACCOUNT: &str = "getNetworkFeeAccount()";
+pub const SIG_OWNER_PUB_GET_INFRA_FEE_ACCOUNT: &str = "getInfraFeeAccount()";
+pub const SIG_OWNER_PUB_GET_BROTLI_COMPRESSION_LEVEL: &str = "getBrotliCompressionLevel()";
+pub const SIG_OWNER_PUB_GET_SCHEDULED_UPGRADE: &str = "getScheduledUpgrade()";
+pub const SIG_OWNER_PUB_IS_CALLDATA_PRICE_INCREASE_ENABLED: &str =
+    "isCalldataPriceIncreaseEnabled()";
 
 pub const EVT_TICKET_CREATED: &str = "TicketCreated(bytes32)";
 pub const EVT_LIFETIME_EXTENDED: &str = "LifetimeExtended(bytes32,uint256)";
