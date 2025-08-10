@@ -1,8 +1,15 @@
 [package]
 name = "arb-alloy-predeploys"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT OR Apache-2.0"
+description = "Arbitrum predeploy addresses, selectors, and helpers compatible with Nitro/ArbOS encodings."
+repository = "https://github.com/tiljrd/arb-alloy"
+homepage = "https://github.com/tiljrd/arb-alloy"
+documentation = "https://docs.rs/arb-alloy-predeploys"
+readme = "README.md"
+keywords = ["arbitrum", "predeploys", "ethereum", "alloy"]
+categories = ["cryptography::cryptocurrencies", "no-std"]
 
 [features]
 default = ["alloc"]
