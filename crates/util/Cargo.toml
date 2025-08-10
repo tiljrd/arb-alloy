@@ -1,8 +1,15 @@
 [package]
 name = "arb-alloy-util"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT OR Apache-2.0"
+description = "Utilities for Arbitrum primitives built on alloy: conversions, helpers, and common types."
+repository = "https://github.com/tiljrd/arb-alloy"
+homepage = "https://github.com/tiljrd/arb-alloy"
+documentation = "https://docs.rs/arb-alloy-util"
+readme = "README.md"
+keywords = ["arbitrum", "utilities", "ethereum", "alloy"]
+categories = ["cryptography::cryptocurrencies", "no-std"]
 
 [features]
 default = ["alloc"]
