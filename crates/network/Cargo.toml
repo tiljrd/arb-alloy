@@ -4,7 +4,7 @@ version = "0.1.2"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 authors = ["tiljrd"]
-description = "Arbitrum-specific marker Network type for reth integration"
+description = "Arbitrum-specific network marker and RPC type bindings for Alloy; used by reth."
 repository = "https://github.com/tiljrd/arb-alloy"
 homepage = "https://github.com/tiljrd/arb-alloy"
 documentation = "https://docs.rs/arb-alloy-network"
@@ -13,3 +13,7 @@ keywords = ["arbitrum", "ethereum", "alloy", "reth", "rpc"]
 categories = ["cryptography::cryptocurrencies"]
 
 [dependencies]
+alloy-network = "1"
+alloy-consensus = "1"
+alloy-rpc-types-eth = "1"
+alloy-primitives = "1"
