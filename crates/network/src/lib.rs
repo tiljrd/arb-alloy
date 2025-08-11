@@ -27,7 +27,7 @@ impl Network for ArbNetwork {
 
     type ReceiptResponse = rpc_eth::TransactionReceipt;
 
-    type HeaderResponse = rpc_eth::Header;
+    type HeaderResponse = rpc_eth::Header<Self::Header>;
 
     type BlockResponse = rpc_eth::Block<Self::TransactionResponse, Self::HeaderResponse>;
 }
