@@ -1,17 +1,15 @@
 [package]
 name = "arb-alloy-network"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 authors = ["tiljrd"]
-description = "Arbitrum-specific alloy network/RPC type bindings for reth integration"
+description = "Arbitrum-specific marker Network type for reth integration"
+repository = "https://github.com/tiljrd/arb-alloy"
+homepage = "https://github.com/tiljrd/arb-alloy"
+documentation = "https://docs.rs/arb-alloy-network"
+readme = "README.md"
+keywords = ["arbitrum", "ethereum", "alloy", "reth", "rpc"]
+categories = ["cryptography::cryptocurrencies"]
 
 [dependencies]
-alloy-primitives = "0.7"
-alloy-consensus = { version = "0.7", features = ["std"] }
-alloy-json-rpc = "0.5"
-alloy-network = "0.5"
-alloy-rpc-types-eth = { version = "0.7", default-features = false, features = ["std"] }
-
-[package.metadata.docs.rs]
-all-features = true
