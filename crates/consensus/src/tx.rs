@@ -499,9 +499,11 @@ impl ArbTxEnvelope {
             ArbTxEnvelope::Legacy(_) => ArbTxType::ArbitrumLegacyTx,
         }
     }
+}
 
+impl ArbTxEnvelope {
     pub fn encode_typed(&self) -> Vec<u8> {
-        let mut out = Vec::new();
+        let mut out = alloc::vec::Vec::new();
         out.push(self.tx_type().as_u8());
         match self {
             ArbTxEnvelope::Deposit(p) => p.encode(&mut out),
@@ -550,6 +552,11 @@ impl ArbTxEnvelope {
                 Ok((ArbTxEnvelope::Legacy(payload.to_vec()), bytes.len()))
             }
         }
+    }
+
+    pub fn typed_hash(&self) -> B256 {
+        use alloy_primitives::keccak256;
+        B256::from_slice(keccak256(self.encode_typed().as_ref()).as_slice())
     }
 }
 
@@ -1103,5 +1110,85 @@ mod golden {
             let out = env.encode_typed();
             assert_eq!(out, golden);
         }
+#[cfg(test)]
+mod golden_block1_hashes {
+    use super::*;
+    use alloc::vec;
+
+    fn h(hexstr: &str) -> Vec<u8> {
+        let s = hexstr.trim_start_matches("0x");
+        alloy_primitives::hex::decode(s).unwrap()
+    }
+    fn h32(hexstr: &str) -> [u8; 32] {
+        let v = h(hexstr);
+        let mut out = [0u8; 32];
+        out.copy_from_slice(&v);
+        out
+    }
+    fn u256(hexstr: &str) -> U256 {
+        let v = h(hexstr);
+        U256::from_be_slice(&v)
+    }
+    fn addr(hexstr: &str) -> Address {
+        let v = h(hexstr);
+        Address::from_slice(&v)
+    }
+
+    #[test]
+    fn golden_block1_internal_0x6a_hash() {
+        let chain_id = u256("0x66eee");
+        let data = Bytes::from(h("0x6bf6a42d000000000000000000000000000000000000000000000000000000005bd57bd900000000000000000000000000000000000000000000000000000000003f28db00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000064e4f6d4"));
+        let env = ArbTxEnvelope::Internal(ArbInternalTx { chain_id, data });
+        assert_eq!(format!("{:#x}", env.tx_type().as_u8()), "0x6a");
+        let hash = env.typed_hash();
+        assert_eq!(format!("{hash:#x}"), "0x1ac8d67d5c4be184b3822f9ef97102789394f4bc75a0f528d5e14debef6e184c");
+    }
+
+    #[test]
+    fn golden_block1_submit_retryable_0x69_hash() {
+        let chain_id = u256("0x66eee");
+        let env = ArbTxEnvelope::SubmitRetryable(ArbSubmitRetryableTx {
+            chain_id,
+            request_id: B256::from(h32("0x0000000000000000000000000000000000000000000000000000000000000001")),
+            from: addr("0xb8787d8f23e176a5d32135d746b69886e03313be"),
+            l1_base_fee: u256("0x5bd57bd9"),
+            deposit_value: u256("0x23e3dbb7b88ab8"),
+            gas_fee_cap: u256("0x3b9aca00"),
+            gas: 0x186a0,
+            retry_to: Some(addr("0x3fab184622dc19b6109349b94811493bf2a45362")),
+            retry_value: u256("0x2386f26fc10000"),
+            beneficiary: addr("0x11155ca9bbf7be58e27f3309e629c847996b43c8"),
+            max_submission_fee: u256("0x1f6377d4ab8"),
+            fee_refund_addr: addr("0x11155ca9bbf7be58e27f3309e629c847996b43c8"),
+            retry_data: Bytes::default(),
+        });
+        assert_eq!(format!("{:#x}", env.tx_type().as_u8()), "0x69");
+        let hash = env.typed_hash();
+        assert_eq!(format!("{hash:#x}"), "0x13cb79b086a427f3db7ebe6ec2bb90a806a3b0368ecee6020144f352e37dbdf6");
+    }
+
+    #[test]
+    fn golden_block1_retry_0x68_hash() {
+        let chain_id = u256("0x66eee");
+        let env = ArbTxEnvelope::Retry(ArbRetryTx {
+            chain_id,
+            nonce: 0,
+            from: addr("0xb8787d8f23e176a5d32135d746b69886e03313be"),
+            gas_fee_cap: u256("0x5f5e100"),
+            gas: 0x186a0,
+            to: Some(addr("0x3fab184622dc19b6109349b94811493bf2a45362")),
+            value: u256("0x2386f26fc10000"),
+            data: Bytes::default(),
+            ticket_id: B256::from_slice(&h("0x13cb79b086a427f3db7ebe6ec2bb90a806a3b0368ecee6020144f352e37dbdf6")),
+            refund_to: addr("0x11155ca9bbf7be58e27f3309e629c847996b43c8"),
+            max_refund: u256("0xb0e85efeab8"),
+            submission_fee_refund: u256("0x1f6377d4ab8"),
+        });
+        assert_eq!(format!("{:#x}", env.tx_type().as_u8()), "0x68");
+        let hash = env.typed_hash();
+        assert_eq!(format!("{hash:#x}"), "0x873c5ee3092c40336006808e249293bf5f4cb3235077a74cac9cafa7cf73cb8b");
+    }
+}
+
     }
 }
