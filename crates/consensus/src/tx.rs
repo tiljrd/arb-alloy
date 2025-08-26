@@ -556,7 +556,9 @@ impl ArbTxEnvelope {
 
     pub fn typed_hash(&self) -> B256 {
         use alloy_primitives::keccak256;
-        B256::from_slice(keccak256(self.encode_typed().as_ref()).as_slice())
+        let data = self.encode_typed();
+        let h = keccak256(data.as_slice());
+        B256::from_slice(h.as_slice())
     }
 }
 
