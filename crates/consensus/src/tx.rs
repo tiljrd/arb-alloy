@@ -1118,14 +1118,18 @@ mod golden_block1_hashes {
     use alloc::vec;
 
     fn h(hexstr: &str) -> Vec<u8> {
-        let mut s = hexstr.trim_start_matches("0x");
-        if s.len() % 2 == 1 {
+        let s = hexstr.trim_start_matches("0x");
+        let mut owned: Option<alloc::string::String> = None;
+        let s_ref: &str = if s.len() % 2 == 1 {
             let mut padded = alloc::string::String::with_capacity(s.len() + 1);
             padded.push('0');
             padded.push_str(s);
-            s = &*Box::<str>::from(padded);
-        }
-        alloy_primitives::hex::decode(s).unwrap()
+            owned = Some(padded);
+            owned.as_deref().unwrap()
+        } else {
+            s
+        };
+        alloy_primitives::hex::decode(s_ref).unwrap()
     }
     fn h32(hexstr: &str) -> [u8; 32] {
         let v = h(hexstr);
