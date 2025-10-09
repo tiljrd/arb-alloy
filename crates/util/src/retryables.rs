@@ -28,6 +28,11 @@ pub fn retryable_timeout_from(now_secs: u64) -> u64 {
     now_secs.saturating_add(RETRYABLE_LIFETIME_SECONDS)
 }
 
+pub fn retryable_escrow_address(ticket_id: &[u8; 32]) -> alloy_primitives::Address {
+    let bytes = escrow_address_from_ticket(*ticket_id);
+    alloy_primitives::Address::from(bytes)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
