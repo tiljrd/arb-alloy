@@ -54,7 +54,6 @@ pub const SIG_RETRY_GET_BENEFICIARY: &str = "getBeneficiary(bytes32)";
 pub const SIG_RETRY_REDEEM: &str = "redeem(bytes32)";
 pub const SIG_RETRY_CANCEL: &str = "cancel(bytes32)";
 pub const SIG_RETRY_GET_CURRENT_REDEEMER: &str = "getCurrentRedeemer()";
-/* Non-callable but present for explorers */
 pub const SIG_RETRY_SUBMIT_RETRYABLE: &str = "submitRetryable(bytes32,uint256,uint256,uint256,uint256,uint64,uint256,address,address,address,bytes)";
 
 /* ArbAddressTable */
