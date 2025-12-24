@@ -164,7 +164,7 @@ pub const EVT_REDEEMED_DEPRECATED: &str = "Redeemed(bytes32)";
 
 /* ArbSys events */
 pub const EVT_L2_TO_L1_TX: &str =
-    "L2ToL1Tx(address,address,uint256,uint256,uint256,uint256,uint256,bytes)";
+    "L2ToL1Tx(address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes)";
 pub const EVT_L2_TO_L1_TRANSACTION_DEPRECATED: &str =
     "L2ToL1Transaction(address,address,uint256,uint256,uint256,uint256,uint256,uint256,uint256,bytes)";
 pub const EVT_SEND_MERKLE_UPDATE: &str = "SendMerkleUpdate(uint256,bytes32,uint256)";
